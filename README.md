@@ -3,7 +3,7 @@ deterministic-zip
 
 > Work In Progress
 
-Simple (almost drop-in) replacement for zip.
+Simple (almost drop-in) replacement for zip that produces deterministic files.
 
 ## Installation
 

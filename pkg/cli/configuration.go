@@ -3,7 +3,6 @@ package cli
 import (
 	"errors"
 	"flag"
-	"os"
 )
 
 // Configuration represents the config for the cli
@@ -15,19 +14,17 @@ type Configuration struct {
 }
 
 func (conf *Configuration) addBoolFlag(field *bool, long string, short string, val bool, usage string) {
-	flag.BoolVar(field, long, val, usage)
+	// flag.BoolVar(field, long, val, usage)
 	flag.BoolVar(field, short, val, usage+" (short)")
 }
 
 // Parse the configuration from cli args
-func (conf *Configuration) Parse(args []string) error {
+func (conf *Configuration) Parse() error {
+
 	conf.addBoolFlag(&conf.Verbose, "verbose", "v", false, "verbose mode for debug outputs and trouble shooting")
 	conf.addBoolFlag(&conf.Recursive, "recursive", "R", false, "include all files verbose")
 
-	cli := flag.NewFlagSet(os.Args[0], flag.ExitOnError)
-	if err := cli.Parse(args); err != nil {
-		return err
-	}
+	flag.Parse()
 
 	remaining := flag.Args()
 	if len(remaining) < 2 {

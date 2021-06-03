@@ -1,14 +1,11 @@
 package file
 
 import (
-	"os"
 	"reflect"
 	"testing"
 )
 
 func TestFindByGlob(t *testing.T) {
-	wd, _ := os.Getwd()
-	t.Log(wd)
 	testCases := []struct {
 		pattern string
 		result  []string

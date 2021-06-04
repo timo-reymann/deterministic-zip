@@ -1,5 +1,5 @@
 package features
 
-func onFlag(flagVal bool) bool {
+func OnFlag(flagVal bool) bool {
 	return flagVal
 }

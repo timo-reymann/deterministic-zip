@@ -19,10 +19,13 @@ func createFileName(input string) string {
 }
 
 func Create(c *cli.Configuration) error {
-	newZipFile, err := os.OpenFile(createFileName(c.ZipFile), os.O_RDWR|os.O_CREATE, 0666)
+	finalName := createFileName(c.ZipFile)
+	newZipFile, err := os.OpenFile(finalName, os.O_RDWR|os.O_CREATE, 0666)
 	if err != nil {
 		return err
 	}
+
+	c.ZipFile = finalName
 
 	zipWriter := zip.NewWriter(newZipFile)
 	sort.Strings(c.SourceFiles)

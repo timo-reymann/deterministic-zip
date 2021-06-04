@@ -4,7 +4,7 @@ import "github.com/timo-reymann/deterministic-zip/pkg/cli"
 
 type Feature interface {
 	IsEnabled(config *cli.Configuration) bool
-	Execute(config *cli.Configuration)
+	Execute(config *cli.Configuration) error
 }
 
 var features = make([]Feature, 0)
@@ -19,4 +19,5 @@ func register(feature Feature) {
 
 func init() {
 	register(Verbose{})
+	register(Recursive{})
 }

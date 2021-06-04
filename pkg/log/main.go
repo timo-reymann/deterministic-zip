@@ -11,6 +11,10 @@ func SetLevel(l int) {
 	level = l
 }
 
+func Level() int {
+	return level
+}
+
 func output(level int, out string) {
 	if isLevel(level) {
 		println(out)
@@ -19,7 +23,7 @@ func output(level int, out string) {
 
 func outputf(level int, out string, vars ...interface{}) {
 	if isLevel(level) {
-		fmt.Printf(out, vars...)
+		fmt.Printf(out+"\n", vars...)
 	}
 }
 

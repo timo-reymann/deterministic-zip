@@ -9,10 +9,11 @@ type Verbose struct {
 }
 
 func (v Verbose) IsEnabled(c *cli.Configuration) bool {
-	return onFlag(c.Verbose)
+	return OnFlag(c.Verbose)
 }
 
-func (v Verbose) Execute(c *cli.Configuration) {
+func (v Verbose) Execute(c *cli.Configuration) error {
 	log.SetLevel(log.LevelDebug)
 	log.Debug("Enable verbose mode")
+	return nil
 }

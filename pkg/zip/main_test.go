@@ -81,8 +81,9 @@ func TestCreate(t *testing.T) {
 			tc.config.SourceFiles[i], tc.config.SourceFiles[j] = tc.config.SourceFiles[j], tc.config.SourceFiles[i]
 		})
 		for i := 0; i < 20; i++ {
+			tempFile := createTmpFile()
 			// Create tempfile
-			tc.config.ZipFile = createTmpFile() + extension
+			tc.config.ZipFile = tempFile
 
 			_ = Create(&tc.config)
 
@@ -90,6 +91,10 @@ func TestCreate(t *testing.T) {
 
 			if tc.sha256 != sha256sum {
 				t.Fatalf("Run #%d Expected checksum %s, but got %s, file: %s", i, tc.sha256, sha256sum, tc.config.ZipFile)
+			}
+
+			if tc.config.ZipFile != tempFile+extension {
+				t.Fatalf("Expected final zip name to be overriden")
 			}
 		}
 	}

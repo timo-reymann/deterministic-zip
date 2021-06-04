@@ -1,6 +1,7 @@
 package zip
 
 import (
+	"archive/zip"
 	"crypto/sha256"
 	"fmt"
 	"github.com/timo-reymann/deterministic-zip/pkg/cli"
@@ -27,8 +28,9 @@ func checksum(file string) string {
 
 func TestCreate(t *testing.T) {
 	testCases := []struct {
-		config cli.Configuration
-		sha256 string
+		config      cli.Configuration
+		sha256      string
+		compression uint16
 	}{
 		{
 			config: cli.Configuration{
@@ -36,7 +38,8 @@ func TestCreate(t *testing.T) {
 					"testdata/file.txt",
 				},
 			},
-			sha256: "39366b547a236b1a82d08e6d3f1d351b0fae47263f2addaf579454c837f85bc5",
+			sha256:      "39366b547a236b1a82d08e6d3f1d351b0fae47263f2addaf579454c837f85bc5",
+			compression: zip.Store,
 		},
 		{
 			config: cli.Configuration{
@@ -44,7 +47,8 @@ func TestCreate(t *testing.T) {
 					"testdata/folder",
 				},
 			},
-			sha256: "481cb3ec2e311b4112b90c37f1581bca8de65ebcf6987dcc610b098c209ecf51",
+			sha256:      "481cb3ec2e311b4112b90c37f1581bca8de65ebcf6987dcc610b098c209ecf51",
+			compression: zip.Store,
 		},
 		{
 			config: cli.Configuration{
@@ -52,7 +56,8 @@ func TestCreate(t *testing.T) {
 					"testdata/folder/file.txt",
 				},
 			},
-			sha256: "a13393b138cd0f6092b7efc69600f76cb0c38f4946291dd88bbf17e9b0edd562",
+			sha256:      "a13393b138cd0f6092b7efc69600f76cb0c38f4946291dd88bbf17e9b0edd562",
+			compression: zip.Store,
 		},
 		{
 			config: cli.Configuration{
@@ -61,7 +66,8 @@ func TestCreate(t *testing.T) {
 					"testdata/file.txt",
 				},
 			},
-			sha256: "2639b8988fff20364789d50ac13e7a656817ef65f86986d72c3909cf538dfbca",
+			sha256:      "2639b8988fff20364789d50ac13e7a656817ef65f86986d72c3909cf538dfbca",
+			compression: zip.Store,
 		},
 		{
 			config: cli.Configuration{
@@ -72,7 +78,30 @@ func TestCreate(t *testing.T) {
 					"testdata/folder/file.txt",
 				},
 			},
-			sha256: "18c98aed998d3693086ce0fc69f2e47731cac3307ef928172a7ad089d0743769",
+			sha256:      "18c98aed998d3693086ce0fc69f2e47731cac3307ef928172a7ad089d0743769",
+			compression: zip.Store,
+		},
+		{
+			config: cli.Configuration{
+				SourceFiles: []string{
+					"testdata",
+					"testdata/file.txt",
+					"testdata/folder",
+					"testdata/folder/file.txt",
+				},
+			},
+			sha256:      "0d7c384e94a6e8489fd4d86f0821bdfb283d8013f4bbb3a13b5577b604a493e3",
+			compression: zip.Deflate,
+		},
+		{
+			config: cli.Configuration{
+				SourceFiles: []string{
+					"testdata/folder/file.txt",
+					"testdata/file.txt",
+				},
+			},
+			sha256:      "dec0f440bd93b3c60c032fda33d83cae21916e86b196c550ef171af703158b04",
+			compression: zip.Deflate,
 		},
 	}
 
@@ -85,7 +114,7 @@ func TestCreate(t *testing.T) {
 			// Create tempfile
 			tc.config.ZipFile = tempFile
 
-			_ = Create(&tc.config)
+			_ = Create(&tc.config, tc.compression)
 
 			sha256sum := checksum(tc.config.ZipFile)
 

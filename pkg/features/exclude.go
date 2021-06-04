@@ -9,6 +9,10 @@ import (
 type Exclude struct {
 }
 
+func (e Exclude) DebugName() string {
+	return "Exclude"
+}
+
 func (e Exclude) IsEnabled(c *cli.Configuration) bool {
 	return conditions.HasElements(&c.Exclude)
 }

@@ -2,8 +2,9 @@ package zip
 
 import (
 	"archive/zip"
+	"compress/flate"
 	"github.com/timo-reymann/deterministic-zip/pkg/cli"
-	"github.com/timo-reymann/deterministic-zip/pkg/log"
+	"github.com/timo-reymann/deterministic-zip/pkg/output"
 	"io"
 	"os"
 	"sort"
@@ -19,19 +20,22 @@ func createFileName(input string) string {
 	return input + extension
 }
 
-func Create(c *cli.Configuration) error {
+func Create(c *cli.Configuration, compression uint16) error {
 	finalName := createFileName(c.ZipFile)
+
+	sort.Strings(c.SourceFiles)
+
 	newZipFile, err := os.OpenFile(finalName, os.O_RDWR|os.O_CREATE, 0666)
 	if err != nil {
 		return err
 	}
-
 	c.ZipFile = finalName
 
 	zipWriter := zip.NewWriter(newZipFile)
-	sort.Strings(c.SourceFiles)
+	registerCompressors(zipWriter)
+
 	for _, srcFile := range c.SourceFiles {
-		if err := appendFile(srcFile, zipWriter); err != nil {
+		if err := appendFile(srcFile, zipWriter, compression); err != nil {
 			return err
 		}
 	}
@@ -39,8 +43,14 @@ func Create(c *cli.Configuration) error {
 	return zipWriter.Close()
 }
 
-func appendFile(srcFile string, zipWriter *zip.Writer) error {
-	log.Debugf("Append file %s", srcFile)
+func registerCompressors(zipWriter *zip.Writer) {
+	zipWriter.RegisterCompressor(zip.Deflate, func(w io.Writer) (io.WriteCloser, error) {
+		return flate.NewWriter(w, flate.BestSpeed)
+	})
+}
+
+func appendFile(srcFile string, zipWriter *zip.Writer, compression uint16) error {
+	output.Debugf("Append file %s", srcFile)
 
 	f, err := os.Open(srcFile)
 	if err != nil {
@@ -52,9 +62,11 @@ func appendFile(srcFile string, zipWriter *zip.Writer) error {
 		return err
 	}
 
-	fw, err := zipWriter.CreateHeader(&zip.FileHeader{
-		Name: srcFile,
-	})
+	header := zip.FileHeader{
+		Name:   srcFile,
+		Method: compression,
+	}
+	fw, err := zipWriter.CreateHeader(&header)
 	if err != nil {
 		return err
 	}
@@ -64,5 +76,7 @@ func appendFile(srcFile string, zipWriter *zip.Writer) error {
 			return err
 		}
 	}
+	zipWriter.Flush()
+
 	return nil
 }

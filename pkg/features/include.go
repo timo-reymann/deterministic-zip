@@ -9,6 +9,10 @@ import (
 type Include struct {
 }
 
+func (i Include) DebugName() string {
+	return "Include"
+}
+
 func (i Include) IsEnabled(c *cli.Configuration) bool {
 	return conditions.HasElements(&c.Include)
 }

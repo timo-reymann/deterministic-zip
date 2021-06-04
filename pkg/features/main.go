@@ -5,6 +5,7 @@ import "github.com/timo-reymann/deterministic-zip/pkg/cli"
 type Feature interface {
 	IsEnabled(config *cli.Configuration) bool
 	Execute(config *cli.Configuration) error
+	DebugName() string
 }
 
 var features = make([]Feature, 0)

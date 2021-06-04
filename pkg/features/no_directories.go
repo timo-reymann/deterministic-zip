@@ -9,6 +9,10 @@ import (
 type NoDirectories struct {
 }
 
+func (n NoDirectories) DebugName() string {
+	return "NoDirectories"
+}
+
 func (n NoDirectories) IsEnabled(c *cli.Configuration) bool {
 	return conditions.OnFlag(c.NoDirEntries)
 }

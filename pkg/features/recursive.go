@@ -9,6 +9,10 @@ import (
 
 type Recursive struct{}
 
+func (r Recursive) DebugName() string {
+	return "Recursive"
+}
+
 func (r Recursive) IsEnabled(c *cli.Configuration) bool {
 	return conditions.OnFlag(c.Recursive)
 }

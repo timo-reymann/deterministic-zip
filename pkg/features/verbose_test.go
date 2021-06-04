@@ -2,7 +2,7 @@ package features
 
 import (
 	"github.com/timo-reymann/deterministic-zip/pkg/cli"
-	"github.com/timo-reymann/deterministic-zip/pkg/log"
+	"github.com/timo-reymann/deterministic-zip/pkg/output"
 	"testing"
 )
 
@@ -20,7 +20,7 @@ func TestVerbose_Execute(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if log.Level() != log.LevelDebug {
+	if output.Level() != output.LevelDebug {
 		t.Fatal("Log level not set")
 	}
 }

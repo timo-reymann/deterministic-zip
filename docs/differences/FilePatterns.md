@@ -5,11 +5,13 @@ While zip doesn't make a difference between a single and multiple stars, this is
 
 ## Examples
 
-| Pattern   | Match with zip                        | Match with deterministic-zip
-| :-------- | :------------------------------------ | :--------------------------------
-| `.git*`   | Matches `.git` and all children       | Doesnt ignore `.git`
-| `.git/*`  | Matches `.git` and all children       | Matches `.git` and all children
-| `.git/**`  | Matches `.git` and all children      | Matches `.git` and all children
+| Pattern               | Match with zip                        | Match with deterministic-zip
+| :-------------------- | :------------------------------------ | :--------------------------------
+| `.git*`               | Matches `.git` and children           | Doesnt match `.git`, but no children
+| `.git/*`              | Matches `.git` and children           | Matches `.git` and all children
+| `.git/**`             | Matches `.git` and children           | Matches `.git` and all children
+| `*node_modules*`      | Matches `node_modules` and children   | Matches `node_modules`, but no children
+| `*node_modules/*`     | Matches `node_modules` and children   | Matches `node_modules` and children
 
 As you can see the deterministic-zip DOES NOT use the star as an wildcard rather than a glob pattern.
 

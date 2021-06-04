@@ -31,6 +31,21 @@ func TestFindInString(t *testing.T) {
 			result:  true,
 		},
 		{
+			path:    "node_modules/some_package/index.js",
+			pattern: "*node_modules*",
+			result:  false,
+		},
+		{
+			path:    "node_modules/some_package/index.js",
+			pattern: "*node_modules/*",
+			result:  true,
+		},
+		{
+			path:    "node_modules/some_package/index.js",
+			pattern: "node_modules/*",
+			result:  true,
+		},
+		{
 			path:    ".git",
 			pattern: ".git*",
 			result:  true,

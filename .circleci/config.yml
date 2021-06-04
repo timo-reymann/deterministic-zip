@@ -1,0 +1,75 @@
+version: '2.1'
+
+
+job_defaults: &job_defaults
+  filters:
+    tags:
+      only: /.*/
+
+
+executors:
+  go:
+    docker:
+      - image: circleci/golang:1.15
+
+
+jobs:
+  test:
+    executor: go
+    steps:
+      - checkout
+      - run:
+          name: Run tests
+          command: |
+            gotestsum --junitfile unit-tests.xml
+            make save-coverage-report
+      - store_test_results:
+          path: unit-tests.xml
+      - store_artifacts:
+          path: unit-tests.xml
+      - store_artifacts:
+          path: coverage.html
+
+  github_release:
+    executor: go
+    steps:
+      - checkout
+      - run:
+          name: Build binaries
+          command: make build
+      - run:
+          name: Create github release
+          command: |
+            go get github.com/github-release/github-release
+            git config user.name $CIRCLE_PROJECT_USERNAME
+            github-release release \
+                --user $CIRCLE_PROJECT_USERNAME \
+                --repo $CIRCLE_PROJECT_REPONAME \
+                --tag $CIRCLE_TAG \
+                --name "Release $CIRCLE_TAG"
+            for filename in dist/*
+            do
+                github-release upload \
+                  --replace \
+                  --user $CIRCLE_PROJECT_USERNAME \
+                  --repo $CIRCLE_PROJECT_REPONAME \
+                  --tag $CIRCLE_TAG \
+                  --name "$(basename "$filename")" \
+                  --file $filename
+            done
+
+workflows:
+  version: 2
+  build:
+    jobs:
+      - test:
+          <<: *job_defaults
+
+      - github_release:
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /.*/
+          requires:
+            - test

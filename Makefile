@@ -1,7 +1,7 @@
 .PHONY: help
 
 SHELL := /bin/bash
-
+BUILD_ARGS=-ldflags "-X github.com/timo-reymann/deterministic-zip/pkg/buildinfo.GitSha=$(shell git rev-parse --short HEAD) -X github.com/timo-reymann/deterministic-zip/pkg/buildinfo.Version=$(shell git describe --tags `git rev-list --tags --max-count=1`) -X github.com/timo-reymann/deterministic-zip/pkg/buildinfo.BuildTime=$(NOW)"
 NOW=$(shell date +'%y-%m-%d_%H:%M:%S')
 
 help: ## Display this help page
@@ -18,3 +18,16 @@ save-coverage-report: coverage ## Save coverage report to coverage.html
 
 create-dist: ## Create dist folder if not already existent
 	@mkdir -p dist/
+
+build-linux: create-dist ## Build binaries for linux (amd64, arm64)
+	@GOOS=linux GOARCH=amd64 go build -o dist/webp-utils-linux-amd64 $(BUILD_ARGS)
+	@GOOS=linux GOARCH=arm64 go build -o dist/webp-utils-linux-arm64 $(BUILD_ARGS)
+
+build-windows: create-dist ## Build binaries for windows (amd64)
+	@GOOS=windows GOARCH=amd64 go build -o dist/webp-utils-windows-amd64.exe $(BUILD_ARGS)
+
+build-darwin: create-dist  ## Build binaries for macOS (amd64, arm64)
+	@GOOS=darwin GOARCH=amd64 go build -o dist/webp-utils-darwin-amd64 $(BUILD_ARGS)
+	@GOOS=darwin GOARCH=amd64 go build -o dist/webp-utils-darwin-arm64 $(BUILD_ARGS)
+
+build: build-linux build-darwin build-windows ## Build binaries for all platform

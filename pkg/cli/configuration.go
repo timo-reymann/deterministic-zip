@@ -41,16 +41,15 @@ func (conf *Configuration) addStringsFlag(field *[]string, long string, short st
 	}
 }
 
-// Parse the configuration from cli args
-func (conf *Configuration) Parse() error {
+func (conf *Configuration) defineFlags() {
 	conf.addBoolFlag(&conf.Verbose, "verbose", "v", false, "Verbose mode or print diagnostic version info.")
 	conf.addBoolFlag(&conf.Recursive, "recurse-paths", "r", false, "Include all files verbose")
 	conf.addBoolFlag(&conf.NoDirEntries, "no-dir-entries", "D", false, "Do not create entries in the zip archive for directories. Directory entries are created by default so that their attributes can be saved in the zip archive.")
 	conf.addStringsFlag(&conf.Exclude, "exclude", "", []string{}, "Exclude specific file patterns")
 	conf.addStringsFlag(&conf.Include, "include", "i", []string{}, "Include only the specified file pattern")
+}
 
-	flag.Parse()
-
+func (conf *Configuration) parseVarargs() error {
 	remaining := flag.Args()
 	if len(remaining) < 2 {
 		return errors.New("specify at least the destination package and source files")
@@ -58,8 +57,31 @@ func (conf *Configuration) Parse() error {
 
 	conf.ZipFile = remaining[0]
 	conf.SourceFiles = remaining[1:]
-
 	return nil
+}
+
+func (conf *Configuration) help() {
+	PrintCompactInfo()
+	flag.PrintDefaults()
+}
+
+// Parse the configuration from cli args
+func (conf *Configuration) Parse() error {
+	conf.defineFlags()
+
+	isHelp := flag.BoolP("help", "h", false, "Show available commands")
+	isVersion := flag.Bool("version", false, "Show version info")
+	flag.Parse()
+
+	if *isHelp {
+		conf.help()
+		return ErrAbort
+	} else if *isVersion {
+		PrintVersionInfo()
+		return ErrAbort
+	}
+
+	return conf.parseVarargs()
 }
 
 // NewConfiguration creates a new configuration

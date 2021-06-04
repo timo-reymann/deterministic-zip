@@ -1,5 +1,8 @@
 deterministic-zip
 ===
+[![Go Report Card](https://goreportcard.com/badge/github.com/timo-reymann/deterministic-zip)](https://goreportcard.com/report/github.com/timo-reymann/deterministic-zip)
+[![CircleCI Build Status](https://circleci.com/gh/timo-reymann/deterministic-zip.svg?style=shield)](https://app.circleci.com/pipelines/github/timo-reymann/deterministic-zip)
+
 
 > Work In Progress
 
@@ -11,7 +14,9 @@ Simple (almost drop-in) replacement for zip that produces deterministic files.
 
 ## Usage
 
-> TBD
+```sh
+deterministic-zip -h
+```
 
 ## FAQ
 

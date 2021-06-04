@@ -8,6 +8,7 @@ import (
 	"sort"
 )
 
+// Recursive adds all children folders recursively
 type Recursive struct{}
 
 // DebugName prints the debuggable name

@@ -7,6 +7,7 @@ import (
 	"github.com/timo-reymann/deterministic-zip/pkg/output"
 )
 
+// Include given patterns, like a allow list
 type Include struct {
 }
 

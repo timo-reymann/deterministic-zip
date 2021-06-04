@@ -7,6 +7,7 @@ import (
 	"os"
 )
 
+// NoDirectories states that no directories should be created
 type NoDirectories struct {
 }
 

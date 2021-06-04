@@ -7,6 +7,7 @@ import (
 	"github.com/timo-reymann/deterministic-zip/pkg/output"
 )
 
+// Exclude given patterns like a block list
 type Exclude struct {
 }
 

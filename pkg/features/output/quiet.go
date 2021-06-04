@@ -6,6 +6,7 @@ import (
 	"github.com/timo-reymann/deterministic-zip/pkg/output"
 )
 
+// Quiet suppresses outputs
 type Quiet struct {
 }
 

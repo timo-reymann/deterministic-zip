@@ -7,6 +7,7 @@ import (
 	"github.com/timo-reymann/deterministic-zip/pkg/features/output"
 )
 
+// Feature is the high level abstraction of modular
 type Feature interface {
 	// IsEnabled checks if the feature should be executed
 	IsEnabled(config *cli.Configuration) bool

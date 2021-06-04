@@ -6,6 +6,7 @@ import (
 	"github.com/timo-reymann/deterministic-zip/pkg/output"
 )
 
+// Verbose enable verbose outputs
 type Verbose struct {
 }
 

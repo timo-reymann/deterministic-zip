@@ -35,10 +35,10 @@ func TestReadDirRecursive(t *testing.T) {
 		{
 			path: "testdata/util",
 			results: []string{
-				"testdata/util",
-				"testdata/util/one",
-				"testdata/util/one/two",
-				"testdata/util/one/two/three",
+				"testdata/util/",
+				"testdata/util/one/",
+				"testdata/util/one/two/",
+				"testdata/util/one/two/three/",
 				"testdata/util/one/two/three/file",
 			},
 		},
@@ -47,7 +47,7 @@ func TestReadDirRecursive(t *testing.T) {
 	for _, tc := range testCases {
 		results, _ := ReadDirRecursive(tc.path)
 		if !reflect.DeepEqual(results, tc.results) {
-			t.Fatalf("Expected %d results, but got %d", len(tc.results), len(results))
+			t.Fatalf("Expected %v, but got %v", tc.results, results)
 		}
 	}
 }

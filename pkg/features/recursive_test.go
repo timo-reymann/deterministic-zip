@@ -23,14 +23,15 @@ func TestRecursive_Execute(t *testing.T) {
 	}{
 		{
 			sources: []string{
-				"testdata/",
+				"testdata",
 			},
 			err: nil,
 			sourcesAfter: []string{
 				"testdata/",
-				"testdata/folder",
+				"testdata/folder/",
 				"testdata/folder/file.txt",
-				"testdata/folder/subfolder",
+				"testdata/folder/subfolder/",
+				"testdata/folder/subfolder/test",
 			},
 		},
 		{
@@ -48,7 +49,8 @@ func TestRecursive_Execute(t *testing.T) {
 			},
 			err: nil,
 			sourcesAfter: []string{
-				"testdata/folder/subfolder",
+				"testdata/folder/subfolder/",
+				"testdata/folder/subfolder/test",
 			},
 		},
 		{

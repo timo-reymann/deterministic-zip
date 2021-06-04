@@ -23,7 +23,13 @@ func ReadDirRecursive(path string) ([]string, error) {
 		if err != nil {
 			return err
 		}
+
+		if d.IsDir() {
+			innerPath += "/"
+		}
+
 		paths = append(paths, innerPath)
+
 		return nil
 	})
 	if err != nil {

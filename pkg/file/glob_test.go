@@ -1,65 +1,112 @@
 package file
 
 import (
-	"reflect"
 	"testing"
 )
 
-func TestFindByGlob(t *testing.T) {
+func TestFindInString(t *testing.T) {
 	testCases := []struct {
+		path    string
 		pattern string
-		result  []string
+		result  bool
 	}{
 		{
+			path:    "testdata/glob/a.json",
 			pattern: "testdata/glob/*.json",
-			result: []string{
-				"testdata/glob/a.json",
-				"testdata/glob/b.json",
-				"testdata/glob/c.json",
-			},
+			result:  true,
 		},
 		{
-			pattern: "testdata/glob/*.csv",
-			result:  []string{},
-		},
-		{
-			pattern: "testdata/glob/a*",
-			result: []string{
-				"testdata/glob/a.json",
-				"testdata/glob/a.txt",
-			},
-		},
-		{
-			pattern: "testdata/glob/**/a*",
-			result: []string{
-				"testdata/glob/a.json",
-				"testdata/glob/a.txt",
-			},
-		},
-		{
+			path:    "testdata/glob/a.json",
 			pattern: "testdata/glob/**",
-			result: []string{
-				"testdata/glob/",
-				"testdata/glob/a.json",
-				"testdata/glob/a.txt",
-				"testdata/glob/b.json",
-				"testdata/glob/b.txt",
-				"testdata/glob/c.json",
-				"testdata/glob/c.txt",
-			},
+			result:  true,
+		},
+		{
+			path:    "testdata/glob",
+			pattern: "testdata/glob/**",
+			result:  true,
+		},
+		{
+			path:    "node_modules",
+			pattern: "*node_modules*",
+			result:  true,
+		},
+		{
+			path:    ".git",
+			pattern: ".git*",
+			result:  true,
+		},
+		{
+			path:    ".git/HEAD",
+			pattern: ".git/*",
+			result:  true,
+		},
+		{
+			path:    ".git",
+			pattern: ".git/*",
+			result:  true,
+		},
+		{
+			path:    ".git/hooks/applypatch-msg.sample",
+			pattern: ".git/*",
+			result:  true,
+		},
+		{
+			path:    ".git/hooks/",
+			pattern: ".git/*",
+			result:  true,
+		},
+		{
+			path:    ".git/asdf",
+			pattern: ".git/*",
+			result:  true,
+		},
+		{
+			path:    "test.c",
+			pattern: "*.[!o]",
+			result:  true,
+		},
+		{
+			path:    "test.c",
+			pattern: "*.[hc]",
+			result:  true,
+		},
+		{
+			path:    "test.h",
+			pattern: "*.[hc]",
+			result:  true,
+		},
+		{
+			path:    "path/to/test.h",
+			pattern: "*.[hc]",
+			result:  true,
+		},
+		{
+			path:    "path/to/test.c",
+			pattern: "*.[hc]",
+			result:  true,
+		},
+		{
+			path:    "z.file",
+			pattern: "[a-f]*",
+			result:  false,
+		},
+		{
+			path:    "a.file",
+			pattern: "[a-f]*",
+			result:  true,
+		},
+		{
+			path:    ".idea",
+			pattern: ".idea",
+			result:  true,
 		},
 	}
 
 	for _, tc := range testCases {
-		results := FindByGlob(tc.pattern)
+		result, _ := MachStringByGlob(tc.pattern, tc.path)
 
-		// DeepEquals doesnt like empty arrays
-		if len(tc.result) == 0 && len(results) == 0 {
-			continue
-		}
-
-		if !reflect.DeepEqual(results, tc.result) {
-			t.Fatalf("Expected %v, but got %v for pattern %s", tc.result, results, tc.pattern)
+		if tc.result != result {
+			t.Fatalf("Expected %v, but got %v for pattern %s and input %s", tc.result, result, tc.pattern, tc.path)
 		}
 	}
 }

@@ -2,7 +2,7 @@ package features
 
 import (
 	"github.com/timo-reymann/deterministic-zip/pkg/cli"
-	"path/filepath"
+	"github.com/timo-reymann/deterministic-zip/pkg/file"
 )
 
 type Exclude struct {
@@ -19,7 +19,8 @@ func (e Exclude) Execute(c *cli.Configuration) error {
 	for _, f := range c.SourceFiles {
 		fileExcluded = false
 		for _, pattern := range c.Exclude {
-			isMatch, err := filepath.Match(pattern, f)
+
+			isMatch, err := file.MachStringByGlob(pattern, f)
 			if err != nil {
 				return err
 			}

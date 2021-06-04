@@ -42,6 +42,17 @@ func TestExclude_Execute(t *testing.T) {
 				".git/*",
 			},
 		},
+		{
+			sourceFiles: []string{
+				".git/HEAD",
+				".git/abc",
+				".git/refs/bla",
+			},
+			targetFiles: []string{},
+			patterns: []string{
+				".git/*",
+			},
+		},
 	}
 
 	for _, tc := range testCases {

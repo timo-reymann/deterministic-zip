@@ -21,6 +21,9 @@ func register(feature Feature) {
 
 func init() {
 	register(Verbose{})
+	// match on raw patterns
+	register(Exclude{})
 	register(Recursive{})
+	// match on recursive or 'globbed'
 	register(Exclude{})
 }

@@ -3,6 +3,7 @@ package zip
 import (
 	"archive/zip"
 	"github.com/timo-reymann/deterministic-zip/pkg/cli"
+	"github.com/timo-reymann/deterministic-zip/pkg/log"
 	"io"
 	"os"
 	"sort"
@@ -39,6 +40,8 @@ func Create(c *cli.Configuration) error {
 }
 
 func appendFile(srcFile string, zipWriter *zip.Writer) error {
+	log.Debugf("Append file %s", srcFile)
+
 	f, err := os.Open(srcFile)
 	if err != nil {
 		return err

@@ -43,6 +43,10 @@ them and help make this even more stable. Of course there will be tests to cover
 still starting from scratch, so if you need advanced features or just dont feel comfortable about using this tool don't
 do it!
 
+### Differences between zip and deterministic-zip
+
+Please see [docs/differences](./docs/differences)
+
 ### Why not just using another project out there?
 
 As far as I know the following (GitHub) projects exist:

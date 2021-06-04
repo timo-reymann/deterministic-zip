@@ -2,26 +2,29 @@ package file
 
 import (
 	"github.com/bmatcuk/doublestar/v4"
-	"os"
 	"path/filepath"
-	"sort"
+	"strings"
 )
 
-// FindByGlob searches files by pattern
-func FindByGlob(pattern string) []string {
-	path, pattern := doublestar.SplitPattern(pattern)
-	fsys := os.DirFS(path)
-	matches, _ := doublestar.Glob(fsys, pattern)
-
-	results := make([]string, len(matches))
-	for i, m := range matches {
-		if m == "." {
-			m = ""
-		}
-		results[i] = path + string(filepath.Separator) + m
+func MachStringByGlob(pattern string, path string) (bool, error) {
+	val, err := doublestar.PathMatch(pattern, path)
+	if err != nil {
+		return false, err
 	}
 
-	sort.Strings(results)
+	if val {
+		return val, nil
+	}
 
-	return results
+	val, err = doublestar.Match(pattern, filepath.Base(path))
+	if err != nil {
+		return false, err
+	}
+
+	// Try with directory match
+	if strings.HasSuffix(pattern, "*") {
+		return doublestar.PathMatch(pattern+"*", path)
+	}
+
+	return val, nil
 }

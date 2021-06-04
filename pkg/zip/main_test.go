@@ -38,7 +38,7 @@ func TestCreate(t *testing.T) {
 					"testdata/file.txt",
 				},
 			},
-			sha256:      "39366b547a236b1a82d08e6d3f1d351b0fae47263f2addaf579454c837f85bc5",
+			sha256:      "a899daf39908313e153c1ddc5676e22ce8fc84672e91f38d15113b09ca64f3c4",
 			compression: zip.Store,
 		},
 		{
@@ -47,7 +47,7 @@ func TestCreate(t *testing.T) {
 					"testdata/folder",
 				},
 			},
-			sha256:      "481cb3ec2e311b4112b90c37f1581bca8de65ebcf6987dcc610b098c209ecf51",
+			sha256:      "7843fd78addc5f54432b1390978392dfddd5eb29e8aaf9151b5b3fdf87e2780b",
 			compression: zip.Store,
 		},
 		{
@@ -56,7 +56,7 @@ func TestCreate(t *testing.T) {
 					"testdata/folder/file.txt",
 				},
 			},
-			sha256:      "a13393b138cd0f6092b7efc69600f76cb0c38f4946291dd88bbf17e9b0edd562",
+			sha256:      "a5064a48c3ab57a6ac746cd09ce712e91b94d31aada5995a3d5cd02baf47e9d8",
 			compression: zip.Store,
 		},
 		{
@@ -66,7 +66,7 @@ func TestCreate(t *testing.T) {
 					"testdata/file.txt",
 				},
 			},
-			sha256:      "2639b8988fff20364789d50ac13e7a656817ef65f86986d72c3909cf538dfbca",
+			sha256:      "d83d02e2820f8efffafcb4380dca07ee3b242ea2fdf663782c4519200ac2541c",
 			compression: zip.Store,
 		},
 		{
@@ -78,7 +78,7 @@ func TestCreate(t *testing.T) {
 					"testdata/folder/file.txt",
 				},
 			},
-			sha256:      "18c98aed998d3693086ce0fc69f2e47731cac3307ef928172a7ad089d0743769",
+			sha256:      "7ace043a37d5e62273c556f7c403f5d45a34400fb69a5776e3be1e153728e022",
 			compression: zip.Store,
 		},
 		{
@@ -90,7 +90,7 @@ func TestCreate(t *testing.T) {
 					"testdata/folder/file.txt",
 				},
 			},
-			sha256:      "0d7c384e94a6e8489fd4d86f0821bdfb283d8013f4bbb3a13b5577b604a493e3",
+			sha256:      "c8e402dd0f5cad2fb568818d3b12e3745d785e9e8ca079737113a768d38c3b92",
 			compression: zip.Deflate,
 		},
 		{
@@ -100,7 +100,7 @@ func TestCreate(t *testing.T) {
 					"testdata/file.txt",
 				},
 			},
-			sha256:      "dec0f440bd93b3c60c032fda33d83cae21916e86b196c550ef171af703158b04",
+			sha256:      "dde82b1ef04349710e40bca6fd5f842fd11cf7b529d2d95ec6d6a87ebb0e9882",
 			compression: zip.Deflate,
 		},
 	}

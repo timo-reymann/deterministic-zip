@@ -5,9 +5,13 @@ import (
 	"errors"
 )
 
+// ErrInvalidCompressionMethod occurs when an invalid compression method is choosen
 var ErrInvalidCompressionMethod = errors.New("invalid compression method")
 
+// Deflate algorithm
 const Deflate = "deflate"
+
+// Store algorithm
 const Store = "store"
 
 // GetCompressionMethod validates the spec and returns the zip compressor

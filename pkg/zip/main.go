@@ -9,9 +9,12 @@ import (
 	"os"
 	"sort"
 	"strings"
+	"time"
 )
 
 const extension = ".zip"
+
+var timestamp = time.Date(2018, 11, 01, 0, 0, 0, 0, time.UTC)
 
 func createFileName(input string) string {
 	if strings.HasSuffix(input, extension) {
@@ -20,6 +23,7 @@ func createFileName(input string) string {
 	return input + extension
 }
 
+// Create new zip file with the given configuration and compression method
 func Create(c *cli.Configuration, compression uint16) error {
 	finalName := createFileName(c.ZipFile)
 
@@ -63,8 +67,9 @@ func appendFile(srcFile string, zipWriter *zip.Writer, compression uint16) error
 	}
 
 	header := zip.FileHeader{
-		Name:   srcFile,
-		Method: compression,
+		Name:     srcFile,
+		Method:   compression,
+		Modified: timestamp,
 	}
 	fw, err := zipWriter.CreateHeader(&header)
 	if err != nil {

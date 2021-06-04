@@ -2,6 +2,7 @@ package output
 
 import "fmt"
 
+const LevelSilence = -1
 const LevelInfo = 0
 const LevelDebug = 1
 
@@ -27,8 +28,8 @@ func outputf(level int, out string, vars ...interface{}) {
 	}
 }
 
-func isLevel(l interface{}) bool {
-	return level == l
+func isLevel(l int) bool {
+	return level >= l
 }
 
 func Info(out string) {

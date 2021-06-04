@@ -1,4 +1,4 @@
-package features
+package output
 
 import (
 	"github.com/timo-reymann/deterministic-zip/pkg/cli"

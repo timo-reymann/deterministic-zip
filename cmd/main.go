@@ -20,6 +20,7 @@ func errCheck(err error) {
 	}
 }
 
+// Execute the application
 func Execute() {
 	config := cli.NewConfiguration()
 	errCheck(config.Parse())

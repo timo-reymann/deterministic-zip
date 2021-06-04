@@ -1,6 +1,7 @@
-package features
+package fileset
 
 import (
+	"errors"
 	"github.com/timo-reymann/deterministic-zip/pkg/cli"
 	"reflect"
 	"testing"
@@ -12,6 +13,11 @@ func TestRecursive_IsEnabled(t *testing.T) {
 	if !recursive.IsEnabled(&c) {
 		t.Fatal("Execution for recursive flag not working")
 	}
+}
+
+func mockErr(msg string) *error {
+	err := errors.New(msg)
+	return &err
 }
 
 func TestRecursive_Execute(t *testing.T) {

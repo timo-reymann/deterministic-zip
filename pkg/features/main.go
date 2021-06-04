@@ -1,15 +1,26 @@
 package features
 
-import "github.com/timo-reymann/deterministic-zip/pkg/cli"
+import (
+	"github.com/timo-reymann/deterministic-zip/pkg/cli"
+	"github.com/timo-reymann/deterministic-zip/pkg/features/fileset"
+	"github.com/timo-reymann/deterministic-zip/pkg/features/filter"
+	"github.com/timo-reymann/deterministic-zip/pkg/features/output"
+)
 
 type Feature interface {
+	// IsEnabled checks if the feature should be executed
 	IsEnabled(config *cli.Configuration) bool
+
+	// Execute the feature
 	Execute(config *cli.Configuration) error
+
+	// DebugName prints the debuggable name
 	DebugName() string
 }
 
 var features = make([]Feature, 0)
 
+// Features returns all registered
 func Features() *[]Feature {
 	return &features
 }
@@ -21,9 +32,11 @@ func register(feature Feature) {
 }
 
 func init() {
-	register(Verbose{})
-	register(Recursive{})
-	register(Exclude{})
-	register(NoDirectories{})
-	register(Include{})
+	// ATTENTION: Order is important -> its like a staging/pipeline system
+	register(output.Verbose{})
+	register(output.Quiet{})
+	register(fileset.Recursive{})
+	register(filter.Exclude{})
+	register(filter.NoDirectories{})
+	register(filter.Include{})
 }

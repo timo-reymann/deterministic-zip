@@ -1,4 +1,4 @@
-package features
+package filter
 
 import (
 	"github.com/timo-reymann/deterministic-zip/pkg/cli"
@@ -6,17 +6,17 @@ import (
 	"testing"
 )
 
-func TestExclude_IsEnabled(t *testing.T) {
-	config := cli.Configuration{Exclude: []string{
+func TestInclude_IsEnabled(t *testing.T) {
+	config := cli.Configuration{Include: []string{
 		"foo.*",
 	}}
-	exclude := Exclude{}
-	if !exclude.IsEnabled(&config) {
-		t.Fatalf("Should execute for non empty exclude")
+	include := Include{}
+	if !include.IsEnabled(&config) {
+		t.Fatalf("Should include for non empty include")
 	}
 }
 
-func TestExclude_Execute(t *testing.T) {
+func TestInclude_Execute(t *testing.T) {
 	testCases := []struct {
 		sourceFiles []string
 		targetFiles []string
@@ -24,43 +24,40 @@ func TestExclude_Execute(t *testing.T) {
 	}{
 		{
 			sourceFiles: []string{
-				"foo.bar",
+				"export.json",
+				"export.csv",
 			},
-			targetFiles: []string{},
+			targetFiles: []string{
+				"export.json",
+			},
 			patterns: []string{
-				"*.bar",
+				"*.json",
 			},
 		},
 		{
 			sourceFiles: []string{
-				".git/HEAD",
-				".git/abc",
-				".git/refs/bla",
+				"export.json",
+				"export.csv",
+				"private/export.json",
 			},
-			targetFiles: []string{},
+			targetFiles: []string{
+				"private/export.json",
+			},
 			patterns: []string{
-				".git/*",
+				"*.json",
+				"private*",
 			},
 		},
 		{
 			sourceFiles: []string{
-				".git/HEAD",
-				".git/abc",
-				".git/refs/bla",
+				"export.json",
+				"export.csv",
+				"private/export.json",
 			},
 			targetFiles: []string{},
 			patterns: []string{
-				".git/*",
-			},
-		},
-		{
-			sourceFiles: []string{
-				"foo.bar",
-			},
-			targetFiles: []string{},
-			patterns: []string{
-				"*.zip",
-				"*.bar",
+				"*.prop",
+				"private*",
 			},
 		},
 	}
@@ -68,10 +65,11 @@ func TestExclude_Execute(t *testing.T) {
 	for _, tc := range testCases {
 		config := cli.Configuration{
 			SourceFiles: tc.sourceFiles,
-			Exclude:     tc.patterns,
+			Include:     tc.patterns,
 		}
-		exclude := Exclude{}
-		if err := exclude.Execute(&config); err != nil {
+
+		include := Include{}
+		if err := include.Execute(&config); err != nil {
 			t.Fatal(err)
 		}
 
@@ -84,5 +82,4 @@ func TestExclude_Execute(t *testing.T) {
 			t.Fatalf("Expected %v, but got %v for patterns %v", tc.targetFiles, config.SourceFiles, tc.patterns)
 		}
 	}
-
 }

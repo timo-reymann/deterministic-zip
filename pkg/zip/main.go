@@ -50,7 +50,7 @@ func registerCompressors(zipWriter *zip.Writer) {
 }
 
 func appendFile(srcFile string, zipWriter *zip.Writer, compression uint16) error {
-	output.Debugf("Append file %s", srcFile)
+	output.Infof("Adding file %s", srcFile)
 
 	f, err := os.Open(srcFile)
 	if err != nil {

@@ -9,6 +9,7 @@ import (
 	"text/tabwriter"
 )
 
+// ErrAbort states that the regular execution should be aborted
 var ErrAbort = errors.New("abort")
 
 func addLine(w *tabwriter.Writer, heading string, val string) {

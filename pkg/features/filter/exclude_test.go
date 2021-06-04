@@ -1,4 +1,4 @@
-package features
+package filter
 
 import (
 	"github.com/timo-reymann/deterministic-zip/pkg/cli"
@@ -6,17 +6,17 @@ import (
 	"testing"
 )
 
-func TestInclude_IsEnabled(t *testing.T) {
-	config := cli.Configuration{Include: []string{
+func TestExclude_IsEnabled(t *testing.T) {
+	config := cli.Configuration{Exclude: []string{
 		"foo.*",
 	}}
-	include := Include{}
-	if !include.IsEnabled(&config) {
-		t.Fatalf("Should include for non empty include")
+	exclude := Exclude{}
+	if !exclude.IsEnabled(&config) {
+		t.Fatalf("Should execute for non empty exclude")
 	}
 }
 
-func TestInclude_Execute(t *testing.T) {
+func TestExclude_Execute(t *testing.T) {
 	testCases := []struct {
 		sourceFiles []string
 		targetFiles []string
@@ -24,40 +24,43 @@ func TestInclude_Execute(t *testing.T) {
 	}{
 		{
 			sourceFiles: []string{
-				"export.json",
-				"export.csv",
-			},
-			targetFiles: []string{
-				"export.json",
-			},
-			patterns: []string{
-				"*.json",
-			},
-		},
-		{
-			sourceFiles: []string{
-				"export.json",
-				"export.csv",
-				"private/export.json",
-			},
-			targetFiles: []string{
-				"private/export.json",
-			},
-			patterns: []string{
-				"*.json",
-				"private*",
-			},
-		},
-		{
-			sourceFiles: []string{
-				"export.json",
-				"export.csv",
-				"private/export.json",
+				"foo.bar",
 			},
 			targetFiles: []string{},
 			patterns: []string{
-				"*.prop",
-				"private*",
+				"*.bar",
+			},
+		},
+		{
+			sourceFiles: []string{
+				".git/HEAD",
+				".git/abc",
+				".git/refs/bla",
+			},
+			targetFiles: []string{},
+			patterns: []string{
+				".git/*",
+			},
+		},
+		{
+			sourceFiles: []string{
+				".git/HEAD",
+				".git/abc",
+				".git/refs/bla",
+			},
+			targetFiles: []string{},
+			patterns: []string{
+				".git/*",
+			},
+		},
+		{
+			sourceFiles: []string{
+				"foo.bar",
+			},
+			targetFiles: []string{},
+			patterns: []string{
+				"*.zip",
+				"*.bar",
 			},
 		},
 	}
@@ -65,11 +68,10 @@ func TestInclude_Execute(t *testing.T) {
 	for _, tc := range testCases {
 		config := cli.Configuration{
 			SourceFiles: tc.sourceFiles,
-			Include:     tc.patterns,
+			Exclude:     tc.patterns,
 		}
-
-		include := Include{}
-		if err := include.Execute(&config); err != nil {
+		exclude := Exclude{}
+		if err := exclude.Execute(&config); err != nil {
 			t.Fatal(err)
 		}
 
@@ -82,4 +84,5 @@ func TestInclude_Execute(t *testing.T) {
 			t.Fatalf("Expected %v, but got %v for patterns %v", tc.targetFiles, config.SourceFiles, tc.patterns)
 		}
 	}
+
 }

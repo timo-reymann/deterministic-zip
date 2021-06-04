@@ -13,7 +13,7 @@ func (r Recursive) IsEnabled(c *cli.Configuration) bool {
 }
 
 func (r Recursive) Execute(c *cli.Configuration) error {
-	files := []string{}
+	files := make([]string, 0)
 
 	for _, f := range c.SourceFiles {
 		isDir, err := file.IsDir(f)

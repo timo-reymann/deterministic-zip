@@ -11,7 +11,7 @@ func TestFindByGlob(t *testing.T) {
 		result  []string
 	}{
 		{
-			pattern: "*.json",
+			pattern: "testdata/glob/*.json",
 			result: []string{
 				"testdata/glob/a.json",
 				"testdata/glob/b.json",
@@ -19,20 +19,39 @@ func TestFindByGlob(t *testing.T) {
 			},
 		},
 		{
-			pattern: "*.csv",
+			pattern: "testdata/glob/*.csv",
 			result:  []string{},
 		},
 		{
-			pattern: "a*",
+			pattern: "testdata/glob/a*",
 			result: []string{
 				"testdata/glob/a.json",
 				"testdata/glob/a.txt",
 			},
 		},
+		{
+			pattern: "testdata/glob/**/a*",
+			result: []string{
+				"testdata/glob/a.json",
+				"testdata/glob/a.txt",
+			},
+		},
+		{
+			pattern: "testdata/glob/**",
+			result: []string{
+				"testdata/glob/",
+				"testdata/glob/a.json",
+				"testdata/glob/a.txt",
+				"testdata/glob/b.json",
+				"testdata/glob/b.txt",
+				"testdata/glob/c.json",
+				"testdata/glob/c.txt",
+			},
+		},
 	}
 
 	for _, tc := range testCases {
-		results := FindByGlob("testdata/glob/" + tc.pattern)
+		results := FindByGlob(tc.pattern)
 
 		// DeepEquals doesnt like empty arrays
 		if len(tc.result) == 0 && len(results) == 0 {
@@ -40,7 +59,7 @@ func TestFindByGlob(t *testing.T) {
 		}
 
 		if !reflect.DeepEqual(results, tc.result) {
-			t.Fatalf("Expected %d results, but got %d", len(tc.result), len(results))
+			t.Fatalf("Expected %v, but got %v for pattern %s", tc.result, results, tc.pattern)
 		}
 	}
 }

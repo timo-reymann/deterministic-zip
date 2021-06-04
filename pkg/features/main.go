@@ -13,6 +13,8 @@ func Features() *[]Feature {
 	return &features
 }
 
+// register given feature, make sure to call in order they should be executed,
+// it works like a pipeline!
 func register(feature Feature) {
 	features = append(features, feature)
 }
@@ -20,4 +22,5 @@ func register(feature Feature) {
 func init() {
 	register(Verbose{})
 	register(Recursive{})
+	register(Exclude{})
 }

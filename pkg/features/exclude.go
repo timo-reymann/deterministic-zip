@@ -1,8 +1,8 @@
 package features
 
 import (
-	"github.com/gobwas/glob"
 	"github.com/timo-reymann/deterministic-zip/pkg/cli"
+	"github.com/timo-reymann/deterministic-zip/pkg/features/conditions"
 	"github.com/timo-reymann/deterministic-zip/pkg/file"
 )
 
@@ -10,17 +10,13 @@ type Exclude struct {
 }
 
 func (e Exclude) IsEnabled(c *cli.Configuration) bool {
-	return len(c.Exclude) > 0
+	return conditions.HasElements(&c.Exclude)
 }
 
 func (e Exclude) Execute(c *cli.Configuration) error {
 	var fileExcluded bool
 	files := make([]string, 0)
-	excludes := make([]glob.Glob, len(c.Exclude))
-
-	for i, e := range c.Exclude {
-		excludes[i] = file.NewGlob(e)
-	}
+	excludes := file.Transform(&c.Exclude)
 
 	for _, f := range c.SourceFiles {
 		fileExcluded = false

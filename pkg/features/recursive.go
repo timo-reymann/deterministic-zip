@@ -2,6 +2,7 @@ package features
 
 import (
 	"github.com/timo-reymann/deterministic-zip/pkg/cli"
+	"github.com/timo-reymann/deterministic-zip/pkg/features/conditions"
 	"github.com/timo-reymann/deterministic-zip/pkg/file"
 	"sort"
 )
@@ -9,7 +10,7 @@ import (
 type Recursive struct{}
 
 func (r Recursive) IsEnabled(c *cli.Configuration) bool {
-	return OnFlag(c.Recursive)
+	return conditions.OnFlag(c.Recursive)
 }
 
 func (r Recursive) Execute(c *cli.Configuration) error {

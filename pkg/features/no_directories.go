@@ -2,6 +2,7 @@ package features
 
 import (
 	"github.com/timo-reymann/deterministic-zip/pkg/cli"
+	"github.com/timo-reymann/deterministic-zip/pkg/features/conditions"
 	"os"
 )
 
@@ -9,7 +10,7 @@ type NoDirectories struct {
 }
 
 func (n NoDirectories) IsEnabled(c *cli.Configuration) bool {
-	return OnFlag(c.NoDirEntries)
+	return conditions.OnFlag(c.NoDirEntries)
 }
 
 func (n NoDirectories) Execute(c *cli.Configuration) error {

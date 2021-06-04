@@ -24,10 +24,6 @@ func ReadDirRecursive(path string) ([]string, error) {
 			return err
 		}
 
-		if d.IsDir() {
-			innerPath += "/"
-		}
-
 		paths = append(paths, innerPath)
 
 		return nil

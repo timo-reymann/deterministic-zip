@@ -23,34 +23,34 @@ func TestRecursive_Execute(t *testing.T) {
 	}{
 		{
 			sources: []string{
-				"testdata",
+				"testdata/recursive",
 			},
 			err: nil,
 			sourcesAfter: []string{
-				"testdata/",
-				"testdata/folder/",
-				"testdata/folder/file.txt",
-				"testdata/folder/subfolder/",
-				"testdata/folder/subfolder/test",
+				"testdata/recursive",
+				"testdata/recursive/folder",
+				"testdata/recursive/folder/file.txt",
+				"testdata/recursive/folder/subfolder",
+				"testdata/recursive/folder/subfolder/test",
 			},
 		},
 		{
 			sources: []string{
-				"testdata/folder/file.txt",
+				"testdata/recursive/folder/file.txt",
 			},
 			err: nil,
 			sourcesAfter: []string{
-				"testdata/folder/file.txt",
+				"testdata/recursive/folder/file.txt",
 			},
 		},
 		{
 			sources: []string{
-				"testdata/folder/subfolder",
+				"testdata/recursive/folder/subfolder/",
 			},
 			err: nil,
 			sourcesAfter: []string{
-				"testdata/folder/subfolder/",
-				"testdata/folder/subfolder/test",
+				"testdata/recursive/folder/subfolder/",
+				"testdata/recursive/folder/subfolder/test",
 			},
 		},
 		{

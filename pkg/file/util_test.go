@@ -35,10 +35,10 @@ func TestReadDirRecursive(t *testing.T) {
 		{
 			path: "testdata/util",
 			results: []string{
-				"testdata/util/",
-				"testdata/util/one/",
-				"testdata/util/one/two/",
-				"testdata/util/one/two/three/",
+				"testdata/util",
+				"testdata/util/one",
+				"testdata/util/one/two",
+				"testdata/util/one/two/three",
 				"testdata/util/one/two/three/file",
 			},
 		},

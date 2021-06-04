@@ -23,4 +23,5 @@ func init() {
 	register(Verbose{})
 	register(Recursive{})
 	register(Exclude{})
+	register(NoDirectories{})
 }

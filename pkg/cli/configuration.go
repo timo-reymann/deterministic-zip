@@ -9,14 +9,21 @@ import (
 type Configuration struct {
 	// ZipFile contains the target zip file name
 	ZipFile string
+
 	// SourceFiles contains a flat list with paths that are either fully qualified or based on the pwd
 	SourceFiles []string
+
 	// Verbose states if the output should contain very detailed information
 	Verbose bool
+
 	// Recursive states if folders should be included recursively
 	Recursive bool
+
 	// Exclude contains file patterns to exclude from the archive
 	Exclude []string
+
+	// NoDirEntries states if no directories should be created inside the zip
+	NoDirEntries bool
 }
 
 func (conf *Configuration) addBoolFlag(field *bool, long string, short string, val bool, usage string) {
@@ -33,8 +40,9 @@ func (conf *Configuration) addStringsFlag(field *[]string, long string, short st
 
 // Parse the configuration from cli args
 func (conf *Configuration) Parse() error {
-	conf.addBoolFlag(&conf.Verbose, "verbose", "v", false, "verbose mode for debug outputs and trouble shooting")
-	conf.addBoolFlag(&conf.Recursive, "recursive", "R", false, "include all files verbose")
+	conf.addBoolFlag(&conf.Verbose, "verbose", "v", false, "Verbose mode or print diagnostic version info.")
+	conf.addBoolFlag(&conf.Recursive, "recurse-paths", "r", false, "include all files verbose")
+	conf.addBoolFlag(&conf.NoDirEntries, "no-dir-entries", "D", false, "Do not create entries in the zip archive for directories. Directory entries are created by default so that their attributes can be saved in the zip archive.")
 	conf.addStringsFlag(&conf.Exclude, "exclude", "", []string{}, "exclude specific file pattern")
 
 	flag.Parse()

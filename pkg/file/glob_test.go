@@ -22,7 +22,7 @@ func TestFindInString(t *testing.T) {
 		},
 		{
 			path:    "testdata/glob",
-			pattern: "testdata/glob/**",
+			pattern: "testdata/glob*",
 			result:  true,
 		},
 		{
@@ -33,7 +33,7 @@ func TestFindInString(t *testing.T) {
 		{
 			path:    "node_modules/some_package/index.js",
 			pattern: "*node_modules*",
-			result:  false,
+			result:  true,
 		},
 		{
 			path:    "node_modules/some_package/index.js",
@@ -57,7 +57,7 @@ func TestFindInString(t *testing.T) {
 		},
 		{
 			path:    ".git",
-			pattern: ".git/*",
+			pattern: ".git*",
 			result:  true,
 		},
 		{
@@ -118,7 +118,7 @@ func TestFindInString(t *testing.T) {
 	}
 
 	for _, tc := range testCases {
-		result, _ := MachStringByGlob(tc.pattern, tc.path)
+		result := NewGlob(tc.pattern).Match(tc.path)
 
 		if tc.result != result {
 			t.Fatalf("Expected %v, but got %v for pattern %s and input %s", tc.result, result, tc.pattern, tc.path)

@@ -1,6 +1,7 @@
 package features
 
 import (
+	"github.com/gobwas/glob"
 	"github.com/timo-reymann/deterministic-zip/pkg/cli"
 	"github.com/timo-reymann/deterministic-zip/pkg/file"
 )
@@ -13,17 +14,18 @@ func (e Exclude) IsEnabled(c *cli.Configuration) bool {
 }
 
 func (e Exclude) Execute(c *cli.Configuration) error {
-	files := make([]string, 0)
 	var fileExcluded bool
+	files := make([]string, 0)
+	excludes := make([]glob.Glob, len(c.Exclude))
+
+	for i, e := range c.Exclude {
+		excludes[i] = file.NewGlob(e)
+	}
 
 	for _, f := range c.SourceFiles {
 		fileExcluded = false
-		for _, pattern := range c.Exclude {
-
-			isMatch, err := file.MachStringByGlob(pattern, f)
-			if err != nil {
-				return err
-			}
+		for _, pattern := range excludes {
+			isMatch := pattern.Match(f)
 
 			if isMatch {
 				fileExcluded = true

@@ -1,1 +1,4 @@
 .idea/
+dist/
+*.zip
+.env

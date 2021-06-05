@@ -108,4 +108,4 @@ workflows:
             tags:
               only: /.*/
           requires:
-            - test
+            - github_release

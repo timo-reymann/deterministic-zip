@@ -18,6 +18,10 @@ func TestGetCompressionMethod(t *testing.T) {
 			method:         Deflate,
 			expectedMethod: zip.Deflate,
 		},
+		{
+			method:         "invalid",
+			expectedMethod: 0,
+		},
 	}
 
 	for _, tc := range testCases {

@@ -41,7 +41,7 @@ func (e Exclude) Execute(c *cli.Configuration) error {
 		if !fileExcluded {
 			files = append(files, f)
 		} else {
-			output.Debugf("%s doesnt match exclude patterns, skipping")
+			output.Debugf("%s doesnt match exclude patterns, skipping", f)
 		}
 	}
 

@@ -34,6 +34,7 @@ func register(feature Feature) {
 
 func init() {
 	// ATTENTION: Order is important -> its like a staging/pipeline system
+	register(output.LogFile{})
 	register(output.Verbose{})
 	register(output.Quiet{})
 	register(fileset.Recursive{})

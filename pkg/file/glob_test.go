@@ -125,3 +125,13 @@ func TestFindInString(t *testing.T) {
 		}
 	}
 }
+
+func TestTransform(t *testing.T) {
+	patterns := Transform(&[]string{
+		"*",
+	})
+
+	if len(patterns) != 1 {
+		t.Fatal("Patterns should be one")
+	}
+}

@@ -3,14 +3,55 @@ deterministic-zip
 [![Go Report Card](https://goreportcard.com/badge/github.com/timo-reymann/deterministic-zip)](https://goreportcard.com/report/github.com/timo-reymann/deterministic-zip)
 [![CircleCI Build Status](https://circleci.com/gh/timo-reymann/deterministic-zip.svg?style=shield)](https://app.circleci.com/pipelines/github/timo-reymann/deterministic-zip)
 
-
 > Work In Progress
 
 Simple (almost drop-in) replacement for zip that produces deterministic files.
 
 ## Installation
 
-> TBD
+### Quick Start
+
+#### Linux (64-bit)
+
+```bash
+curl -LO https://github.com/timo-reymann/deterministic-zip/releases/download/$(curl -Lso /dev/null -w %{url_effective} https://github.com/timo-reymann/deterministic-zip/releases/latest | grep -o '[^/]*$')/deterministic-zip_linux_amd64 && \
+chmod +x deterministic-zip_linux_amd64 && \
+sudo mv deterministic-zip_linux_amd64 /usr/local/bin/git-semver-tag
+```
+
+#### Darwin (Intel)
+
+```bash
+curl -LO https://github.com/timo-reymann/deterministic-zip/releases/download/$(curl -Lso /dev/null -w %{url_effective} https://github.com/timo-reymann/deterministic-zip/releases/latest | grep -o '[^/]*$')/deterministic-zip_darwin_amd64 && \
+chmod +x deterministic-zip_darwin_amd64 && \
+sudo mv deterministic-zip_darwin_amd64 /usr/local/bin/git-semver-tag
+```
+
+### Install with go
+
+```bash
+go get -u github.com/timo-reymann/deterministic-zip
+```
+
+#### Supported platforms
+
+The following platforms are supported:
+
+- Linux (gcc)
+    - 32-bit
+    - 64-bit
+    - ARM 64-bit
+    - ARM 32-bit
+- Darwin
+    - 64-bit
+    - ARM (M1)
+- Windows
+    - ARM
+    - 32-bit
+    - 64-bit
+
+Binaries for all of these can be found on
+the [latest release page](https://github.com/timo-reymann/deterministic-zip/releases/latest).
 
 ## Usage
 
@@ -67,8 +108,8 @@ As far as I know the following (GitHub) projects exist:
     - has prebuilt binaries for all relevant platforms (and other can be built easily)
     - very basic, but you can customize compression (nice feature)
 
-All in all they are just simply not what I needed. My favourite is Rust, because its just simply dropping
-in a binary. Something that's very convenient especially when it comes to Docker builds.
+All in all they are just simply not what I needed. My favourite is Rust, because its just simply dropping in a binary.
+Something that's very convenient especially when it comes to Docker builds.
 
-The main problem that all these solutions share is that it in my opinion cool things like excluding patterns,
-that I regularly use are simply not implemented, and i REALLY love glob patterns.
+The main problem that all these solutions share is that it in my opinion cool things like excluding patterns, that I
+regularly use are simply not implemented, and i REALLY love glob patterns.

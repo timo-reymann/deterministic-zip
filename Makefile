@@ -49,6 +49,6 @@ build-openbsd: create-dist ## Build binaries for OpenBSD
     @GOOS=openbsd GOARCH=386 go build -o $(BIN_PREFIX)openbsd-i386 $(BUILD_ARGS)
 
 create-checksums: ## Create checksums for binaries
-	@find ./dist -type f -exec sh -c 'sha512sum {} > {}.sha512' {} \;
+	@find ./dist -type f -exec sh -c 'sha256sum {} | cut -d " " -f 1 > {}.sha256' {} \;
 
 build: build-linux build-darwin build-windows build-freebsd build-openbsd create-checksums ## Build binaries for all platform

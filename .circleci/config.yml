@@ -57,7 +57,17 @@ jobs:
                   --name "$(basename "$filename")" \
                   --file $filename
             done
-
+      - run:
+          name: Create new Homebrew formula
+          command: |
+            git clone https://${GITHUB_TOKEN}@github.com/timo-reymann/homebrew-deterministic-zip.git
+            cd homebrew-deterministic-zip
+            ./generate-py \
+              --version $CIRCLE_TAG \
+              --sha256-mac $(<dist/deterministic-zip_darwin-amd64.sha256)  \
+              --sha256-linux $(<dist/deterministic-zip_linux-amd64.sha256)
+            git add . && git commit -m "chore: Update formula for version $CIRCLE_TAG"
+            git push
 workflows:
   version: 2
   build:

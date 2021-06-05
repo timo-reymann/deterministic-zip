@@ -11,6 +11,9 @@ executors:
   go:
     docker:
       - image: circleci/golang:1.16
+  python:
+    docker:
+      - image: circleci/python:3
 
 
 jobs:
@@ -37,6 +40,10 @@ jobs:
       - run:
           name: Build binaries
           command: make build
+      - persist_to_workspace:
+          root: ./
+          paths:
+            - dist/
       - run:
           name: Create github release
           command: |
@@ -57,6 +64,12 @@ jobs:
                   --name "$(basename "$filename")" \
                   --file $filename
             done
+
+  update_homebrew_formula:
+    executor: python
+    steps:
+      - attach_workspace:
+          at: ./
       - run:
           name: Create new Homebrew formula
           command: |
@@ -66,8 +79,12 @@ jobs:
               --version $CIRCLE_TAG \
               --sha256-mac $(<dist/deterministic-zip_darwin-amd64.sha256)  \
               --sha256-linux $(<dist/deterministic-zip_linux-amd64.sha256)
-            git add . && git commit -m "chore: Update formula for version $CIRCLE_TAG"
+            git config --global user.name "CircleCI"
+            git config --global user.email no-reply@circleci.com
+            git add .
+            git commit -m "chore: Update formula for version $CIRCLE_TAG" || true
             git push
+
 workflows:
   version: 2
   build:
@@ -76,6 +93,15 @@ workflows:
           <<: *job_defaults
 
       - github_release:
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /.*/
+          requires:
+            - test
+
+      - update_homebrew_formula:
           filters:
             branches:
               ignore: /.*/

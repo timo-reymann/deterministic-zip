@@ -5,6 +5,9 @@ BUILD_ARGS=-ldflags "-X github.com/timo-reymann/deterministic-zip/pkg/buildinfo.
 NOW=$(shell date +'%y-%m-%d_%H:%M:%S')
 BIN_PREFIX="dist/deterministic-zip_"
 
+clean: ## Cleanup artifacts
+	@rm -rf dist/
+
 help: ## Display this help page
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[33m%-30s\033[0m %s\n", $$1, $$2}'
 
@@ -45,4 +48,7 @@ build-openbsd: create-dist ## Build binaries for OpenBSD
 	@GOOS=openbsd GOARCH=amd64 go build -o $(BIN_PREFIX)openbsd-amd64 $(BUILD_ARGS)
     @GOOS=openbsd GOARCH=386 go build -o $(BIN_PREFIX)openbsd-i386 $(BUILD_ARGS)
 
-build: build-linux build-darwin build-windows build-freebsd build-openbsd ## Build binaries for all platform
+create-checksums: ## Create checksums for binaries
+	@find ./dist -type f -exec sh -c 'sha512sum {} > {}.sha512' {} \;
+
+build: build-linux build-darwin build-windows build-freebsd build-openbsd create-checksums ## Build binaries for all platform

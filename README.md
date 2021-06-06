@@ -1,5 +1,6 @@
 deterministic-zip
 ===
+[![GitHub Release](https://img.shields.io/github/v/release/timo-reymann/deterministic-zip?label=version)](https://github.com/timo-reymann/deterministic-zip/releases/latest)
 [![Go Report Card](https://goreportcard.com/badge/github.com/timo-reymann/deterministic-zip)](https://goreportcard.com/report/github.com/timo-reymann/deterministic-zip)
 [![CircleCI Build Status](https://circleci.com/gh/timo-reymann/deterministic-zip.svg?style=shield)](https://app.circleci.com/pipelines/github/timo-reymann/deterministic-zip)
 [![codecov](https://codecov.io/gh/timo-reymann/deterministic-zip/branch/main/graph/badge.svg?token=6O7X0VO5L6)](https://codecov.io/gh/timo-reymann/deterministic-zip)

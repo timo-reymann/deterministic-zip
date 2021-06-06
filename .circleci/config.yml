@@ -90,8 +90,7 @@ jobs:
 
             python3 ./generate.py \
               --version $CIRCLE_TAG \
-              --sha256-mac $(<../dist/deterministic-zip_darwin-amd64.sha256)  \
-              --sha256-linux $(<../dist/deterministic-zip_linux-amd64.sha256)
+              --sha256-mac $(<../dist/deterministic-zip_darwin-amd64.sha256)
             git config --global user.name "CircleCI"
             git config --global user.email no-reply@circleci.com
             git add .

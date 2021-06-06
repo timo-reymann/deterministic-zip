@@ -26,6 +26,11 @@ jobs:
           command: |
             gotestsum --junitfile unit-tests.xml
             make save-coverage-report
+      - run:
+          name: Get test coverage
+          command: |
+            go test -race -coverprofile=coverage.txt -covermode=atomic  -v ./...
+            bash <(curl -s https://codecov.io/bash)
       - store_test_results:
           path: unit-tests.xml
       - store_artifacts:

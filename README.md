@@ -21,6 +21,15 @@ sudo mv deterministic-zip_linux_amd64 /usr/local/bin/git-semver-tag
 
 #### Darwin (Intel)
 
+##### brew
+
+```bash
+brew tap timo-reymann/deterministic-zip
+brew install deterministic-zip
+```
+
+##### manual
+
 ```bash
 curl -LO https://github.com/timo-reymann/deterministic-zip/releases/download/$(curl -Lso /dev/null -w %{url_effective} https://github.com/timo-reymann/deterministic-zip/releases/latest | grep -o '[^/]*$')/deterministic-zip_darwin_amd64 && \
 chmod +x deterministic-zip_darwin_amd64 && \

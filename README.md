@@ -58,6 +58,14 @@ The following platforms are supported (and have prebuilt binaries):
     - ARM
     - 32-bit
     - 64-bit
+- FreeBSD
+  - 32-bit
+  - 64-bit
+  - ARM 64-bit
+  - ARM 32-bit
+- OpenBSD
+  - 32-bit
+  - 64-bit
 
 Binaries for all of these can be found on
 the [latest release page](https://github.com/timo-reymann/deterministic-zip/releases/latest).
@@ -88,6 +96,13 @@ The use cases for this are primary:
 
 - Zipping serverless code
 - Backups or other files that get rsynced
+
+#### Want to know more about the topic of deterministic/reproducible builds?
+
+I can recommend the following resources:
+
+- [reproducible-builds.org](https://reproducible-builds.org/)
+- [Debian Wiki](https://wiki.debian.org/ReproducibleBuilds/About)
 
 ### How reliable is it?
 

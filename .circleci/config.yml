@@ -33,7 +33,7 @@ jobs:
       - store_artifacts:
           path: coverage.html
 
-  github_release:
+  build:
     executor: go
     steps:
       - checkout
@@ -44,6 +44,13 @@ jobs:
           root: ./
           paths:
             - dist/
+
+  github_release:
+    executor: go
+    steps:
+      - checkout
+      - attach_workspace:
+          at: ./
       - run:
           name: Create github release
           command: |
@@ -93,6 +100,11 @@ workflows:
       - test:
           <<: *job_defaults
 
+      - build:
+          <<: *job_defaults
+          requires:
+            - test
+
       - github_release:
           filters:
             branches:
@@ -100,7 +112,7 @@ workflows:
             tags:
               only: /.*/
           requires:
-            - test
+            - build
 
       - update_homebrew_formula:
           filters:

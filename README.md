@@ -5,8 +5,6 @@ deterministic-zip
 [![CircleCI Build Status](https://circleci.com/gh/timo-reymann/deterministic-zip.svg?style=shield)](https://app.circleci.com/pipelines/github/timo-reymann/deterministic-zip)
 [![codecov](https://codecov.io/gh/timo-reymann/deterministic-zip/branch/main/graph/badge.svg?token=6O7X0VO5L6)](https://codecov.io/gh/timo-reymann/deterministic-zip)
 
-> Work In Progress
-
 Simple (almost drop-in) replacement for zip that produces deterministic files.
 
 ## Installation
@@ -44,9 +42,9 @@ sudo mv deterministic-zip_darwin_amd64 /usr/local/bin/git-semver-tag
 go get -u github.com/timo-reymann/deterministic-zip
 ```
 
-#### Supported platforms
+### Supported platforms
 
-The following platforms are supported:
+The following platforms are supported (and have prebuilt binaries):
 
 - Linux (gcc)
     - 32-bit

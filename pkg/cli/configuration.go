@@ -5,6 +5,9 @@ import (
 	flag "github.com/spf13/pflag"
 )
 
+// ErrMinimalParamsMissing states that the minimal arguments for the tool are not present, making it unprocessable
+var ErrMinimalParamsMissing = errors.New("required arguments for target file and at least one source missing")
+
 // Configuration represents the config for the cli and may be mutated by features
 type Configuration struct {
 	// ZipFile is the target zip file name
@@ -65,14 +68,14 @@ func (conf *Configuration) defineFlags() {
 	conf.addStringsFlag(&conf.Exclude, "exclude", "", []string{}, "Exclude specific file patterns")
 	conf.addStringsFlag(&conf.Include, "include", "i", []string{}, "Include only the specified file pattern")
 	conf.addStringFlag(&conf.CompressionMethod, "compression-method", "Z", "deflate", "Set the default compression method. \nCurrently the main methods supported by zip are store and deflate. \nCompression method can be set to:\n\nstore       Setting the compression method to store forces to store entries with no compression. \n            This is generally faster than compressing entries, but results in no space savings.\n\ndeflate     This is the default method for zip. If zip determines that storing is better than deflation, the entry will be stored instead.\n")
-	conf.addStringFlag(&conf.LogFilePath, "logfile-path", "", "", "Open a logfile at the given path. By default any existing file at that location is overwritten, but the -la option will result in an existing file being opened and the new log information appended to any existing information. Only warnings and errors are written to the log unless the -li option is also given, then all information messages are also written to the log.")
+	conf.addStringFlag(&conf.LogFilePath, "logfile-path", "", "", "Open a logfile at the given path.\nBy default any existing file at that location is overwritten, but the --log-append option will result in an existing file being opened and the new log information appended to any existing information.")
 	conf.addBoolFlag(&conf.LogFileAppend, "log-append", "", false, "Append to existing logfile. Default is to overwrite.")
 }
 
 func (conf *Configuration) parseVarargs() error {
 	remaining := flag.Args()
 	if len(remaining) < 2 {
-		return errors.New("specify at least the destination package and source files")
+		return ErrMinimalParamsMissing
 	}
 
 	conf.ZipFile = remaining[0]
@@ -80,8 +83,9 @@ func (conf *Configuration) parseVarargs() error {
 	return nil
 }
 
-func (conf *Configuration) help() {
+func (conf *Configuration) Help() {
 	PrintCompactInfo()
+	println("deterministic-zip [-options] [zipfile list]")
 	flag.PrintDefaults()
 }
 
@@ -89,12 +93,12 @@ func (conf *Configuration) help() {
 func (conf *Configuration) Parse() error {
 	conf.defineFlags()
 
-	isHelp := flag.BoolP("help", "h", false, "Show available commands")
+	isHelp := flag.BoolP("Help", "h", false, "Show available commands")
 	isVersion := flag.Bool("version", false, "Show version info")
 	flag.Parse()
 
 	if *isHelp {
-		conf.help()
+		conf.Help()
 		return ErrAbort
 	} else if *isVersion {
 		PrintVersionInfo()

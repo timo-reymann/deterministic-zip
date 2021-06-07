@@ -14,7 +14,10 @@ import (
 
 const extension = ".zip"
 
-var timestamp = time.Date(2018, 11, 01, 0, 0, 0, 0, time.UTC)
+var extra = make([]byte, 0)
+
+// ModifiedTimestamp contains the default modification timestamp used for all files in the archive
+var ModifiedTimestamp = time.Date(2018, 11, 01, 0, 0, 0, 0, time.UTC)
 
 func createFileName(input string) string {
 	if strings.HasSuffix(input, extension) {
@@ -66,6 +69,7 @@ func appendFile(srcFile string, zipWriter *zip.Writer, compression uint16) error
 		return err
 	}
 
+	// Directories are currently not supported.
 	if stat.IsDir() {
 		return nil
 	}
@@ -74,9 +78,10 @@ func appendFile(srcFile string, zipWriter *zip.Writer, compression uint16) error
 	if err != nil {
 		return err
 	}
-	h.Modified = timestamp
+	h.Modified = ModifiedTimestamp
 	h.Method = compression
 	h.Name = srcFile
+	h.Extra = extra
 
 	fw, err := zipWriter.CreateHeader(h)
 	if err != nil {

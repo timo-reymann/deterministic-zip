@@ -66,12 +66,19 @@ func appendFile(srcFile string, zipWriter *zip.Writer, compression uint16) error
 		return err
 	}
 
-	header := zip.FileHeader{
-		Name:     srcFile,
-		Method:   compression,
-		Modified: timestamp,
+	if stat.IsDir() {
+		return nil
 	}
-	fw, err := zipWriter.CreateHeader(&header)
+
+	h, err := zip.FileInfoHeader(stat)
+	if err != nil {
+		return err
+	}
+	h.Modified = timestamp
+	h.Method = compression
+	h.Name = srcFile
+
+	fw, err := zipWriter.CreateHeader(h)
 	if err != nil {
 		return err
 	}

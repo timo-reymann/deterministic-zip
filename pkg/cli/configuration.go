@@ -25,9 +25,6 @@ type Configuration struct {
 	// Exclude file patterns from the archive
 	Exclude []string
 
-	// NoDirEntries states if no directories should be created inside the zip
-	NoDirEntries bool
-
 	// Include patterns
 	Include []string
 
@@ -63,7 +60,6 @@ func (conf *Configuration) addStringFlag(field *string, long string, short strin
 func (conf *Configuration) defineFlags() {
 	conf.addBoolFlag(&conf.Verbose, "verbose", "v", false, "Verbose mode or print diagnostic version info.")
 	conf.addBoolFlag(&conf.Recursive, "recurse-paths", "r", false, "Include all files verbose")
-	conf.addBoolFlag(&conf.NoDirEntries, "no-dir-entries", "D", false, "Do not create entries in the zip archive for directories. Directory entries are created by default.")
 	conf.addBoolFlag(&conf.Quiet, "quiet", "q", false, "Quiet mode; eliminate informational messages")
 	conf.addStringsFlag(&conf.Exclude, "exclude", "x", []string{}, "Exclude specific file patterns")
 	conf.addStringsFlag(&conf.Include, "include", "i", []string{}, "Include only the specified file pattern")

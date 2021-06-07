@@ -39,6 +39,5 @@ func init() {
 	register(output.Quiet{})
 	register(fileset.Recursive{})
 	register(filter.Exclude{})
-	register(filter.NoDirectories{})
 	register(filter.Include{})
 }

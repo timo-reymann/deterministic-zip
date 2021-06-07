@@ -14,9 +14,9 @@ Simple (almost drop-in) replacement for zip that produces deterministic files.
 #### Linux (64-bit)
 
 ```bash
-curl -LO https://github.com/timo-reymann/deterministic-zip/releases/download/$(curl -Lso /dev/null -w %{url_effective} https://github.com/timo-reymann/deterministic-zip/releases/latest | grep -o '[^/]*$')/deterministic-zip_linux_amd64 && \
-chmod +x deterministic-zip_linux_amd64 && \
-sudo mv deterministic-zip_linux_amd64 /usr/local/bin/git-semver-tag
+curl -LO https://github.com/timo-reymann/deterministic-zip/releases/download/$(curl -Lso /dev/null -w %{url_effective} https://github.com/timo-reymann/deterministic-zip/releases/latest | grep -o '[^/]*$')/deterministic-zip_linux-amd64 && \
+chmod +x deterministic-zip_linux-amd64 && \
+sudo mv deterministic-zip_linux-amd64 /usr/local/bin/deterministic-zip
 ```
 
 #### Darwin (Intel)
@@ -31,9 +31,9 @@ brew install deterministic-zip
 ##### manual
 
 ```bash
-curl -LO https://github.com/timo-reymann/deterministic-zip/releases/download/$(curl -Lso /dev/null -w %{url_effective} https://github.com/timo-reymann/deterministic-zip/releases/latest | grep -o '[^/]*$')/deterministic-zip_darwin_amd64 && \
-chmod +x deterministic-zip_darwin_amd64 && \
-sudo mv deterministic-zip_darwin_amd64 /usr/local/bin/git-semver-tag
+curl -LO https://github.com/timo-reymann/deterministic-zip/releases/download/$(curl -Lso /dev/null -w %{url_effective} https://github.com/timo-reymann/deterministic-zip/releases/latest | grep -o '[^/]*$')/deterministic-zip_darwin-amd64 && \
+chmod +x deterministic-zip_darwin-amd64 && \
+sudo mv deterministic-zip_darwin-amd64 /usr/local/bin/deterministic-zip
 ```
 
 ### Install with go

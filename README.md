@@ -137,3 +137,14 @@ Something that's very convenient especially when it comes to Docker builds.
 
 The main problem that all these solutions share is that it in my opinion cool things like excluding patterns, that I
 regularly use are simply not implemented, and i REALLY love glob patterns.
+
+
+## Libraries
+
+This whole project wouldnt be possible with the great work of the
+following libraries:
+
+- [glob by gobwas](https://github.com/gobwas/glob)
+- [pflag by spf13](https://github.com/spf13/pflag)
+- [go stdlib](https://github.com/golang/go)
+

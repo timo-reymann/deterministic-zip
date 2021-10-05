@@ -1,10 +1,13 @@
 version: '2.1'
 
-
 job_defaults: &job_defaults
   filters:
     tags:
       only: /.*/
+
+
+orbs:
+  github-release: timo-reymann/github-release@1.1.0
 
 
 executors:
@@ -50,33 +53,6 @@ jobs:
           paths:
             - dist/
 
-  github_release:
-    executor: go
-    steps:
-      - checkout
-      - attach_workspace:
-          at: ./
-      - run:
-          name: Create github release
-          command: |
-            go get github.com/github-release/github-release
-            git config user.name $CIRCLE_PROJECT_USERNAME
-            github-release release \
-                --user $CIRCLE_PROJECT_USERNAME \
-                --repo $CIRCLE_PROJECT_REPONAME \
-                --tag $CIRCLE_TAG \
-                --name "Release $CIRCLE_TAG"
-            for filename in dist/*
-            do
-                github-release upload \
-                  --replace \
-                  --user $CIRCLE_PROJECT_USERNAME \
-                  --repo $CIRCLE_PROJECT_REPONAME \
-                  --tag $CIRCLE_TAG \
-                  --name "$(basename "$filename")" \
-                  --file $filename
-            done
-
   update_homebrew_formula:
     executor: python
     steps:
@@ -109,7 +85,9 @@ workflows:
           requires:
             - test
 
-      - github_release:
+      - github-release/create-release-with-files:
+          attach-workspace: true
+          file_pattern: 'dist/*'
           filters:
             branches:
               ignore: /.*/
@@ -125,4 +103,4 @@ workflows:
             tags:
               only: /.*/
           requires:
-            - github_release
+            - github-release/create-release-with-files

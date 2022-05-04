@@ -10,7 +10,13 @@ Simple (almost drop-in) replacement for zip that produces deterministic files.
 
 ## Installation
 
-### Quick Start
+### Automatic install
+
+```bash
+bash <(curl -sS https://raw.githubusercontent.com/timo-reymann/deterministic-zip/main/installer)
+```
+
+### Manual
 
 #### Linux (64-bit)
 

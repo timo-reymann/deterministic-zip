@@ -1,0 +1,57 @@
+#!/bin/bash
+
+set -eo pipefail
+
+_ok() {
+  echo -e "\033[0;32m OK\033[0m"
+}
+
+{
+  if uname -a | grep -q "Darwin"; then
+    SYS_ENV_PLATFORM=macos
+  elif uname -a | grep -q "x86_64 GNU/Linux"; then
+    SYS_ENV_PLATFORM=linux_x86
+  elif uname -a | grep -q "aarch64 GNU/Linux"; then
+    SYS_ENV_PLATFORM=linux_arm
+  else
+    echo "This installer does not currently support your platform. If you believe it should, please consider opening an issue on the GitHub repository:"
+    echo "https://github.com/timo-reymann/circleci-orb-deterministic-zip/issues/new"
+    exit 1
+  fi
+
+  if [ "${UID:-$(id -u)}" -ne 0 ]; then
+    echo -n "Installer is not running as root, trying to use sudo ..."
+    SUDO="sudo"
+    $SUDO whoami >/dev/null
+    _ok
+  fi
+
+  echo -n "Fetch the latest version from GitHub ... "
+  # shellcheck disable=SC1083
+  latest_version="$(curl -Lso /dev/null -w %{url_effective} https://github.com/timo-reymann/deterministic-zip/releases/latest | grep -o '[^/]*$')"
+  _ok
+
+  echo -n "Determine artifact to download based on host OS ... "
+  # Install per platform
+  case $SYS_ENV_PLATFORM in
+  linux_x86)
+    artifact="deterministic-zip_linux-amd64"
+    ;;
+  linux_arm)
+    artifact="deterministic-zip_linux-arm64"
+    ;;
+  macos)
+    artifact="deterministic-zip_darwin-amd64"
+    ;;
+  esac
+  _ok
+
+  echo -n "Download binary for ${latest_version} ... "
+  curl -LsS https://github.com/timo-reymann/deterministic-zip/releases/download/${latest_version}/${artifact} -o deterministic-zip
+  _ok
+
+  echo -n "Installing to /usr/local/bin ..."
+  $SUDO mv deterministic-zip /usr/local/bin/deterministic-zip
+  $SUDO chmod +x /usr/local/bin/deterministic-zip
+  _ok
+}

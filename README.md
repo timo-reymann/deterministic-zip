@@ -95,7 +95,7 @@ zip file changes.
 This means only the content, no metadata. You can achieve this with zip, yes.
 
 The problem that still remains is that the order is almost unpredictable and zip is very platform specific, so you will
-end up with a bunch of crazy shell pipelines. And I am not event talking about windows at this point.
+end up with a bunch of crazy shell pipelines. And I am not even talking about windows at this point.
 
 So this is where this tool comes in, it is intended to be a drop-in replacement for zip in your build process.
 

@@ -54,13 +54,18 @@ func TestCreate(t *testing.T) {
 		},
 		{
 			config: cli.Configuration{
+				Directories: true,
 				SourceFiles: []string{
 					"testdata/folder",
 				},
 			},
 			sha256:      "7839c2a3939b278e9b24e02621e6bdb07f4c32f79e111661ee9948f7516009c3",
 			compression: zip.Store,
-			zipFiles:    []expectedFile{},
+			zipFiles: []expectedFile{
+				{
+					name: "testdata/folder/",
+				},
+			},
 		},
 		{
 			config: cli.Configuration{
@@ -103,11 +108,38 @@ func TestCreate(t *testing.T) {
 					"testdata/folder/file.txt",
 				},
 			},
-			sha256:      "e2431c807ee3f202e84f66ed3756ae736eb890916cf1737420708bed2181c5e0",
+			sha256:      "b18ca34af3f15c04ec624e286412f44b2ed5c83e83d93b4b5b148aa03477ee9f",
 			compression: zip.Store,
 			zipFiles: []expectedFile{
 				{
 					name: "testdata/file.txt",
+				},
+				{
+					name: "testdata/folder/file.txt",
+				},
+			},
+		},
+		{
+			config: cli.Configuration{
+				Directories: true,
+				SourceFiles: []string{
+					"testdata",
+					"testdata/file.txt",
+					"testdata/folder",
+					"testdata/folder/file.txt",
+				},
+			},
+			sha256:      "e2431c807ee3f202e84f66ed3756ae736eb890916cf1737420708bed2181c5e0",
+			compression: zip.Store,
+			zipFiles: []expectedFile{
+				{
+					name: "testdata/",
+				},
+				{
+					name: "testdata/file.txt",
+				},
+				{
+					name: "testdata/folder/",
 				},
 				{
 					name: "testdata/folder/file.txt",
@@ -123,11 +155,38 @@ func TestCreate(t *testing.T) {
 					"testdata/folder/file.txt",
 				},
 			},
-			sha256:      "9501f16697415f9de62aab8e28925111abfac435842b455ea1bd36852a5b6adc",
+			sha256:      "8b3eeacdd0c5c265a67bf465d9fc7d3ed0c041fc27534fb3f14b34d5a2b0b518",
 			compression: zip.Deflate,
 			zipFiles: []expectedFile{
 				{
 					name: "testdata/file.txt",
+				},
+				{
+					name: "testdata/folder/file.txt",
+				},
+			},
+		},
+		{
+			config: cli.Configuration{
+				Directories: true,
+				SourceFiles: []string{
+					"testdata",
+					"testdata/file.txt",
+					"testdata/folder",
+					"testdata/folder/file.txt",
+				},
+			},
+			sha256:      "9501f16697415f9de62aab8e28925111abfac435842b455ea1bd36852a5b6adc",
+			compression: zip.Deflate,
+			zipFiles: []expectedFile{
+				{
+					name: "testdata/",
+				},
+				{
+					name: "testdata/file.txt",
+				},
+				{
+					name: "testdata/folder/",
 				},
 				{
 					name: "testdata/folder/file.txt",

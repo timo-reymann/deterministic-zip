@@ -58,7 +58,7 @@ func TestCreate(t *testing.T) {
 					"testdata/folder",
 				},
 			},
-			sha256:      "8739c76e681f900923b900c9df0ef75cf421d39cabb54650c4b9ad19b6a76d85",
+			sha256:      "7839c2a3939b278e9b24e02621e6bdb07f4c32f79e111661ee9948f7516009c3",
 			compression: zip.Store,
 			zipFiles:    []expectedFile{},
 		},
@@ -103,7 +103,7 @@ func TestCreate(t *testing.T) {
 					"testdata/folder/file.txt",
 				},
 			},
-			sha256:      "b18ca34af3f15c04ec624e286412f44b2ed5c83e83d93b4b5b148aa03477ee9f",
+			sha256:      "e2431c807ee3f202e84f66ed3756ae736eb890916cf1737420708bed2181c5e0",
 			compression: zip.Store,
 			zipFiles: []expectedFile{
 				{
@@ -123,7 +123,7 @@ func TestCreate(t *testing.T) {
 					"testdata/folder/file.txt",
 				},
 			},
-			sha256:      "8b3eeacdd0c5c265a67bf465d9fc7d3ed0c041fc27534fb3f14b34d5a2b0b518",
+			sha256:      "9501f16697415f9de62aab8e28925111abfac435842b455ea1bd36852a5b6adc",
 			compression: zip.Deflate,
 			zipFiles: []expectedFile{
 				{

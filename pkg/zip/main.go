@@ -76,11 +76,6 @@ func appendFile(srcFile string, zipWriter *zip.Writer, compression uint16) error
 		return err
 	}
 
-	// Directories are currently not supported.
-	//if stat.IsDir() {
-	//	return nil
-	//}
-
 	h, err := zip.FileInfoHeader(stat)
 	if err != nil {
 		return err

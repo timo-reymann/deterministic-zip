@@ -232,7 +232,7 @@ func TestCreate(t *testing.T) {
 			}
 
 			if tc.config.ZipFile != tempFileZip {
-				t.Fatalf("Expected final zip name to be overriden")
+				t.Fatalf("Expected final zip name to be overridden")
 			}
 
 			r, err := zip.OpenReader(tempFileZip)

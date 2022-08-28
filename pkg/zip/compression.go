@@ -5,7 +5,7 @@ import (
 	"errors"
 )
 
-// ErrInvalidCompressionMethod occurs when an invalid compression method is choosen
+// ErrInvalidCompressionMethod occurs when an invalid compression method is chosen
 var ErrInvalidCompressionMethod = errors.New("invalid compression method")
 
 // Deflate algorithm

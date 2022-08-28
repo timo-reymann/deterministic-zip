@@ -22,6 +22,9 @@ type Configuration struct {
 	// Recursive includes all child folders automatically
 	Recursive bool
 
+	// Directories includes directory entries in the zip file
+	Directories bool
+
 	// Exclude file patterns from the archive
 	Exclude []string
 
@@ -59,6 +62,7 @@ func (conf *Configuration) addStringFlag(field *string, long string, short strin
 
 func (conf *Configuration) defineFlags() {
 	conf.addBoolFlag(&conf.Verbose, "verbose", "v", false, "Verbose mode or print diagnostic version info.")
+	conf.addBoolFlag(&conf.Directories, "directories", "D", false, "Include directories in the zip file.")
 	conf.addBoolFlag(&conf.Recursive, "recurse-paths", "r", false, "Include all files verbose")
 	conf.addBoolFlag(&conf.Quiet, "quiet", "q", false, "Quiet mode; eliminate informational messages")
 	conf.addStringsFlag(&conf.Exclude, "exclude", "x", []string{}, "Exclude specific file patterns")

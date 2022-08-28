@@ -4,6 +4,7 @@ import (
 	"archive/zip"
 	"compress/flate"
 	"github.com/timo-reymann/deterministic-zip/pkg/cli"
+	"github.com/timo-reymann/deterministic-zip/pkg/features/conditions"
 	"github.com/timo-reymann/deterministic-zip/pkg/output"
 	"io"
 	"os"
@@ -42,7 +43,7 @@ func Create(c *cli.Configuration, compression uint16) error {
 	registerCompressors(zipWriter)
 
 	for _, srcFile := range c.SourceFiles {
-		if err := appendFile(srcFile, zipWriter, compression); err != nil {
+		if err := appendFile(srcFile, zipWriter, compression, conditions.OnFlag(c.Directories)); err != nil {
 			return err
 		}
 	}
@@ -56,10 +57,17 @@ func registerCompressors(zipWriter *zip.Writer) {
 	})
 }
 
-func appendFile(srcFile string, zipWriter *zip.Writer, compression uint16) error {
+func appendFile(srcFile string, zipWriter *zip.Writer, compression uint16, includeDirs bool) error {
 	output.Infof("Adding file %s", srcFile)
 
 	f, err := os.Open(srcFile)
+	// Ensure the open file is always closed, ignoring any errors during the close
+	defer func(f *os.File) {
+		if f != nil {
+			_ = f.Close()
+		}
+	}(f)
+
 	if err != nil {
 		return err
 	}
@@ -69,8 +77,7 @@ func appendFile(srcFile string, zipWriter *zip.Writer, compression uint16) error
 		return err
 	}
 
-	// Directories are currently not supported.
-	if stat.IsDir() {
+	if !includeDirs && stat.IsDir() {
 		return nil
 	}
 
@@ -83,6 +90,13 @@ func appendFile(srcFile string, zipWriter *zip.Writer, compression uint16) error
 	h.Name = srcFile
 	h.Extra = extra
 
+	// If dealing with a directory, we must ensure the h.Name field ends with a `/`
+	if stat.IsDir() {
+		if !strings.HasSuffix(h.Name, "/") {
+			h.Name += "/"
+		}
+	}
+
 	fw, err := zipWriter.CreateHeader(h)
 	if err != nil {
 		return err
@@ -93,7 +107,8 @@ func appendFile(srcFile string, zipWriter *zip.Writer, compression uint16) error
 			return err
 		}
 	}
-	zipWriter.Flush()
+	// explicitly ignore any errors during the flush
+	_ = zipWriter.Flush()
 
 	return nil
 }

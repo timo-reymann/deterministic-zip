@@ -54,13 +54,18 @@ func TestCreate(t *testing.T) {
 		},
 		{
 			config: cli.Configuration{
+				Directories: true,
 				SourceFiles: []string{
 					"testdata/folder",
 				},
 			},
-			sha256:      "8739c76e681f900923b900c9df0ef75cf421d39cabb54650c4b9ad19b6a76d85",
+			sha256:      "7839c2a3939b278e9b24e02621e6bdb07f4c32f79e111661ee9948f7516009c3",
 			compression: zip.Store,
-			zipFiles:    []expectedFile{},
+			zipFiles: []expectedFile{
+				{
+					name: "testdata/folder/",
+				},
+			},
 		},
 		{
 			config: cli.Configuration{
@@ -116,6 +121,33 @@ func TestCreate(t *testing.T) {
 		},
 		{
 			config: cli.Configuration{
+				Directories: true,
+				SourceFiles: []string{
+					"testdata",
+					"testdata/file.txt",
+					"testdata/folder",
+					"testdata/folder/file.txt",
+				},
+			},
+			sha256:      "e2431c807ee3f202e84f66ed3756ae736eb890916cf1737420708bed2181c5e0",
+			compression: zip.Store,
+			zipFiles: []expectedFile{
+				{
+					name: "testdata/",
+				},
+				{
+					name: "testdata/file.txt",
+				},
+				{
+					name: "testdata/folder/",
+				},
+				{
+					name: "testdata/folder/file.txt",
+				},
+			},
+		},
+		{
+			config: cli.Configuration{
 				SourceFiles: []string{
 					"testdata",
 					"testdata/file.txt",
@@ -128,6 +160,33 @@ func TestCreate(t *testing.T) {
 			zipFiles: []expectedFile{
 				{
 					name: "testdata/file.txt",
+				},
+				{
+					name: "testdata/folder/file.txt",
+				},
+			},
+		},
+		{
+			config: cli.Configuration{
+				Directories: true,
+				SourceFiles: []string{
+					"testdata",
+					"testdata/file.txt",
+					"testdata/folder",
+					"testdata/folder/file.txt",
+				},
+			},
+			sha256:      "9501f16697415f9de62aab8e28925111abfac435842b455ea1bd36852a5b6adc",
+			compression: zip.Deflate,
+			zipFiles: []expectedFile{
+				{
+					name: "testdata/",
+				},
+				{
+					name: "testdata/file.txt",
+				},
+				{
+					name: "testdata/folder/",
 				},
 				{
 					name: "testdata/folder/file.txt",

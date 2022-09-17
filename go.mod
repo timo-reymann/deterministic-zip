@@ -1,6 +1,6 @@
 module github.com/timo-reymann/deterministic-zip
 
-go 1.15
+go 1.19
 
 require (
 	github.com/gobwas/glob v0.2.3

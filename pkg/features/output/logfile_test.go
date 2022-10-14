@@ -7,12 +7,12 @@ import (
 	"testing"
 )
 
-func TestLogFile_IsEnabled(t *testing.T) {
+func TestLogFileIsEnabled(t *testing.T) {
 	lf := LogFile{}
 	lf.IsEnabled(&cli.Configuration{LogFilePath: "/tmp/log"})
 }
 
-func TestLogFile_Execute(t *testing.T) {
+func TestLogFileExecute(t *testing.T) {
 	lf := LogFile{}
 	err := lf.Execute(&cli.Configuration{LogFilePath: "/tmp/log"})
 	if err != nil {

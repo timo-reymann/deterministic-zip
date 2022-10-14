@@ -6,7 +6,7 @@ import (
 	"testing"
 )
 
-func TestQuiet_IsEnabled(t *testing.T) {
+func TestQuietIsEnabled(t *testing.T) {
 	conf := cli.Configuration{Quiet: true}
 	quiet := Quiet{}
 	if !quiet.IsEnabled(&conf) {
@@ -14,7 +14,7 @@ func TestQuiet_IsEnabled(t *testing.T) {
 	}
 }
 
-func TestQuiet_Execute(t *testing.T) {
+func TestQuietExecute(t *testing.T) {
 	_ = Quiet{}.Execute(nil)
 
 	if output.Level() != output.LevelSilence {

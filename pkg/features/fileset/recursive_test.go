@@ -7,7 +7,7 @@ import (
 	"testing"
 )
 
-func TestRecursive_IsEnabled(t *testing.T) {
+func TestRecursiveIsEnabled(t *testing.T) {
 	c := cli.Configuration{Recursive: true}
 	recursive := Recursive{}
 	if !recursive.IsEnabled(&c) {
@@ -20,7 +20,7 @@ func mockErr(msg string) *error {
 	return &err
 }
 
-func TestRecursive_Execute(t *testing.T) {
+func TestRecursiveExecute(t *testing.T) {
 	recursive := Recursive{}
 	testCases := []struct {
 		sources      []string

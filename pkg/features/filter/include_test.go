@@ -6,7 +6,7 @@ import (
 	"testing"
 )
 
-func TestInclude_IsEnabled(t *testing.T) {
+func TestIncludeIsEnabled(t *testing.T) {
 	config := cli.Configuration{Include: []string{
 		"foo.*",
 	}}
@@ -16,7 +16,7 @@ func TestInclude_IsEnabled(t *testing.T) {
 	}
 }
 
-func TestInclude_Execute(t *testing.T) {
+func TestIncludeExecute(t *testing.T) {
 	testCases := []struct {
 		sourceFiles []string
 		targetFiles []string

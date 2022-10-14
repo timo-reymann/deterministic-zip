@@ -6,7 +6,7 @@ import (
 	"testing"
 )
 
-func TestExclude_IsEnabled(t *testing.T) {
+func TestExcludeIsEnabled(t *testing.T) {
 	config := cli.Configuration{Exclude: []string{
 		"foo.*",
 	}}
@@ -16,7 +16,7 @@ func TestExclude_IsEnabled(t *testing.T) {
 	}
 }
 
-func TestExclude_Execute(t *testing.T) {
+func TestExcludeExecute(t *testing.T) {
 	testCases := []struct {
 		sourceFiles []string
 		targetFiles []string

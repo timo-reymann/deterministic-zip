@@ -7,6 +7,7 @@ deterministic-zip
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=timo-reymann_deterministic-zip&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=timo-reymann_deterministic-zip)
 [![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=timo-reymann_deterministic-zip&metric=sqale_rating)](https://sonarcloud.io/summary/new_code?id=timo-reymann_deterministic-zip)
 [![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=timo-reymann_deterministic-zip&metric=security_rating)](https://sonarcloud.io/summary/new_code?id=timo-reymann_deterministic-zip)
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Ftimo-reymann%2Fdeterministic-zip.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Ftimo-reymann%2Fdeterministic-zip?ref=badge_shield)
 
 Simple (almost drop-in) replacement for zip that produces deterministic files.
 
@@ -157,3 +158,7 @@ following libraries:
 - [pflag by spf13](https://github.com/spf13/pflag)
 - [go stdlib](https://github.com/golang/go)
 
+
+
+## License
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Ftimo-reymann%2Fdeterministic-zip.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Ftimo-reymann%2Fdeterministic-zip?ref=badge_large)

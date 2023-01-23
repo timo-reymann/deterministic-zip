@@ -7,8 +7,7 @@ job_defaults: &job_defaults
 
 
 orbs:
-  github-release: timo-reymann/github-release@1.1.0
-
+  github-cli: circleci/github-cli@2.2.0
 
 executors:
   go:
@@ -72,6 +71,19 @@ jobs:
             git add .
             git commit -m "chore: Update formula for version $CIRCLE_TAG" || true
             git push
+  create_github_release:
+    executor: go
+    steps:
+      - checkout
+      - attach_workspace:
+          at: .
+          name: Retrieve persisted binaries
+      -  github-cli/install:
+          version: "2.21.2"
+      - run:
+          name: Publish release
+          command: |
+            gh release create ${CIRCLE_TAG} --generate-notes dist/*
 
 workflows:
   version: 2
@@ -85,9 +97,7 @@ workflows:
           requires:
             - test
 
-      - github-release/create-release-with-files:
-          attach-workspace: true
-          file_pattern: 'dist/*'
+      - create_github_release:
           filters:
             branches:
               ignore: /.*/
@@ -103,4 +113,4 @@ workflows:
             tags:
               only: /.*/
           requires:
-            - github-release/create-release-with-files
+            - create_github_release

@@ -9,8 +9,16 @@ deterministic-zip
 [![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=timo-reymann_deterministic-zip&metric=security_rating)](https://sonarcloud.io/summary/new_code?id=timo-reymann_deterministic-zip)
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Ftimo-reymann%2Fdeterministic-zip.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Ftimo-reymann%2Fdeterministic-zip?ref=badge_shield)
 
+<p align="center">
+	<img width="300" src="./.github/images/logo.png">
+    <br />
+    Simple (almost drop-in) replacement for zip that produces deterministic files.
+</p>
 
-Simple (almost drop-in) replacement for zip that produces deterministic files.
+## Features
+- dropin for zip
+- remove all metadata from files added
+- immutable zip util
 
 ## Installation
 
@@ -87,9 +95,7 @@ the [latest release page](https://github.com/timo-reymann/deterministic-zip/rele
 deterministic-zip -h
 ```
 
-## FAQ
-
-### Why?!
+## Motivation
 
 Why another zip-tool? What is this deterministic stuff?!
 
@@ -108,12 +114,14 @@ The use cases for this are primary:
 - Zipping serverless code
 - Backups or other files that get rsynced
 
-#### Want to know more about the topic of deterministic/reproducible builds?
+### Want to know more about the topic of deterministic/reproducible builds?
 
 I can recommend the following resources:
 
 - [reproducible-builds.org](https://reproducible-builds.org/)
 - [Debian Wiki](https://wiki.debian.org/ReproducibleBuilds/About)
+
+## Documentation
 
 ### How reliable is it?
 
@@ -128,7 +136,34 @@ do it!
 
 Please see [docs/differences](./docs/differences)
 
-### Why not just using another project out there?
+## Contributing
+I love your input! I want to make contributing to this project as easy and transparent as possible, whether it's:
+
+- Reporting a bug
+- Discussing the current state of the configuration
+- Submitting a fix
+- Proposing new features
+- Becoming a maintainer
+
+To get started please read the [Contribution Guidelines](./CONTRIBUTING.md).
+
+## Development
+
+### Requirements
+- [Go](https://go.dev/doc/install)
+- [GNU make](https://www.gnu.org/software/make/)
+
+### Test
+```sh
+make test-coverage-report
+```
+
+### Build
+```sh
+make build
+```
+
+## Alternatives
 
 As far as I know the following (GitHub) projects exist:
 
@@ -150,7 +185,7 @@ The main problem that all these solutions share is that it in my opinion cool th
 regularly use are simply not implemented, and i REALLY love glob patterns.
 
 
-## Libraries
+## Credits
 
 This whole project wouldnt be possible with the great work of the
 following libraries:

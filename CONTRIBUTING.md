@@ -20,7 +20,7 @@ Pull requests are the best way to propose changes to the codebase (I use [Circle
 5. Make sure your code and commit lints.
 6. Issue that pull request!
 
-## Any contributions you make will be under the Climate Strike License
+## Any contributions you make will be under the "Climate Strike" License Version 1.0 (Draft)
 In short, when you submit code changes, your submissions are understood to be under the same ["Climate Strike" License Version 1.0 (Draft)](https://github.com/timo-reymann/deterministic-zip/blob/main/LICENSE) that covers the project. Feel free to contact the maintainers if that's a concern.
 
 ## Report bugs using Github's issues

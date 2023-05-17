@@ -8,6 +8,7 @@ job_defaults: &job_defaults
 
 orbs:
   github-cli: circleci/github-cli@2.2.0
+  docker: circleci/docker@2.2.0
 
 executors:
   go:
@@ -52,6 +53,20 @@ jobs:
           paths:
             - dist/
 
+  publish_docker_image:
+    executor: docker/docker
+    steps:
+      - checkout
+      - attach_workspace:
+          at: ./
+      - run:
+          name: Build and publish image
+          command: |
+            echo "$DOCKER_TOKEN" | docker login -u "$DOCKER_USERNAME" --password-stdin
+            make build-docker
+      - docker/update-description:
+          image: timo-reymann/deterministic-zip
+
   update_homebrew_formula:
     executor: python
     steps:
@@ -71,6 +86,7 @@ jobs:
             git add .
             git commit -m "chore: Update formula for version $CIRCLE_TAG" || true
             git push
+
   create_github_release:
     executor: go
     steps:
@@ -97,6 +113,11 @@ workflows:
           requires:
             - test
 
+      - publish_docker_image:
+          <<: *job_defaults
+          requires:
+            - build
+
       - create_github_release:
           filters:
             branches:
@@ -114,3 +135,4 @@ workflows:
               only: /.*/
           requires:
             - create_github_release
+

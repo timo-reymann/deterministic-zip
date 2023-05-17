@@ -68,7 +68,7 @@ jobs:
             docker buildx create --use
             make build-docker
       - docker/update-description:
-          image: timo-reymann/deterministic-zip
+          image: timoreymann/deterministic-zip
           docker-username: DOCKER_USERNAME
           docker-password: DOCKER_TOKEN
  

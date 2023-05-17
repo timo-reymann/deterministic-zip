@@ -119,7 +119,11 @@ workflows:
             - test
 
       - publish_docker_image:
-          <<: *job_defaults
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /.*/
           requires:
             - build
 

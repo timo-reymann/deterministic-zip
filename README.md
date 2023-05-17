@@ -65,14 +65,14 @@ go get -u github.com/timo-reymann/deterministic-zip
 
 The following platforms are supported (and have prebuilt binaries):
 
-- Linux (gcc)
+- Linux
     - 32-bit
     - 64-bit
     - ARM 64-bit
     - ARM 32-bit
 - Darwin
     - 64-bit
-    - ARM (M1)
+    - ARM (M1/M2)
 - Windows
     - ARM
     - 32-bit

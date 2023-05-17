@@ -69,7 +69,9 @@ jobs:
             make build-docker
       - docker/update-description:
           image: timo-reymann/deterministic-zip
-
+          docker-username: DOCKER_USERNAME
+          docker-password: DOCKER_TOKEN
+ 
   update_homebrew_formula:
     executor: python
     steps:

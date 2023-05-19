@@ -64,7 +64,7 @@ go get -u github.com/timo-reymann/deterministic-zip
 ```
 
 #### Docker
-Please check the [Containerized section in Usage](#containerization) for
+Please check the [Containerized section in Usage](#containerized) for
 more details.
 
 ### Supported platforms

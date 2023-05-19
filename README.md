@@ -64,7 +64,8 @@ go get -u github.com/timo-reymann/deterministic-zip
 
 ### Supported platforms
 
-The following platforms are supported (and have prebuilt binaries):
+The following platforms are supported (and have prebuilt binaries /
+ready to use integration):
 
 - Linux
     - 32-bit

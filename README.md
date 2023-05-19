@@ -96,13 +96,19 @@ ready to use integration):
   - ARM
   - 64-bit
 - CircleCI
+- GitHub Actions
 
-Binaries for all of these can be found on
-the [latest release page](https://github.com/timo-reymann/deterministic-zip/releases/latest).
+### Where to find the latest release for your platform
 
+#### Binaries
+Binaries for all of these can be found on the [latest release page](https://github.com/timo-reymann/deterministic-zip/releases/latest).
+
+#### Docker
 For the docker image check the [docker hub](https://hub.docker.com/r/timoreymann/deterministic-zip).
 
-If you are looking for integration with CircleCI check out the [orb](https://circleci.com/developer/orbs/orb/timo-reymann/deterministic-zip).
+#### CI Provider
+- [CircleCI orb](https://circleci.com/developer/orbs/orb/timo-reymann/deterministic-zip)
+- [GitHub Action](https://github.com/marketplace/actions/run-deterministic-zip)
 
 ## Usage
 

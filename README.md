@@ -63,6 +63,10 @@ sudo mv deterministic-zip_darwin-amd64 /usr/local/bin/deterministic-zip
 go get -u github.com/timo-reymann/deterministic-zip
 ```
 
+#### Docker
+Please check the [Containerized section in Usage](#containerization) for
+more details.
+
 ### Supported platforms
 
 The following platforms are supported (and have prebuilt binaries /
@@ -111,7 +115,7 @@ can just run deterministic-zip as a command.
 deterministic-zip -h
 ```
 
-### Docker
+### Containerized
 
 Please be aware that the image contains just the binary, no OS, libs or
 anything else. It also runs as root to be able to zip files no matter

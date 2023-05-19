@@ -85,14 +85,54 @@ The following platforms are supported (and have prebuilt binaries):
 - OpenBSD
   - 32-bit
   - 64-bit
+- OCI compatible container engines (Docker, podman etc)
+  - ARM
+  - 64-bit
 
 Binaries for all of these can be found on
 the [latest release page](https://github.com/timo-reymann/deterministic-zip/releases/latest).
 
+For the docker image check the [docker hub](https://hub.docker.com/r/timoreymann/deterministic-zip).
+
 ## Usage
+
+### Command Line
+
+If you installed the binary via Releases, Install-Script or using go you
+can just run deterministic-zip as a command.
 
 ```sh
 deterministic-zip -h
+```
+
+### Docker
+
+Please be aware that the image contains just the binary, no OS, libs or
+anything else. It also runs as root to be able to zip files no matter
+the ownership, feel free to build your own images based on that as well.
+
+#### Using the container directly
+
+If you want to use the tool on a platform not supported yet or dont want
+to install the tool locally you can also mount your folder in
+`/workspace` which is the default working directory. Than you can just
+execute commands as you want to.
+
+```sh
+docker run -v $PWD:/workspace timoreymann/deterministic-zip:latest
+```
+
+#### Integrating into your CI image
+
+If you want to integrate the tool directly into your build image, you
+can also utilize the auto updates from tools like renovatebot or
+dependabot. Using docker built in features you can just get the binary
+directly from the image.
+
+```dockerfile
+FROM base-image:tag
+# do your customizations
+COPY --from=timoreymann/deterministic-zip:latest /deterministic-zip /usr/bin/deterministic-zip
 ```
 
 ## Motivation

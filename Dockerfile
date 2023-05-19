@@ -1,4 +1,4 @@
-FROM busybox as bin
+FROM busybox AS bin
 COPY ./dist /binaries
 RUN if [[ "$(arch)" == "x86_64" ]]; then \
         architecture="amd64"; \
@@ -11,4 +11,6 @@ RUN if [[ "$(arch)" == "x86_64" ]]; then \
 
 FROM scratch
 COPY --from=bin /bin/deterministic-zip /deterministic-zip
+WORKDIR /workspace
 ENTRYPOINT [ "/deterministic-zip" ]
+

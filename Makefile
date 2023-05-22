@@ -2,8 +2,9 @@
 
 SHELL := /bin/bash
 VERSION=$(shell git describe --tags `git rev-list --tags --max-count=1`)
-BUILD_ARGS=-ldflags "-X github.com/timo-reymann/deterministic-zip/pkg/buildinfo.GitSha=$(shell git rev-parse --short HEAD) -X github.com/timo-reymann/deterministic-zip/pkg/buildinfo.Version=$(VERSION) -X github.com/timo-reymann/deterministic-zip/pkg/buildinfo.BuildTime=$(NOW)"
 NOW=$(shell date +'%y-%m-%d_%H:%M:%S')
+COMMIT_REF=$(shell git rev-parse --short HEAD)
+BUILD_ARGS=-ldflags "-X github.com/timo-reymann/deterministic-zip/pkg/buildinfo.GitSha=$(COMMIT_REF) -X github.com/timo-reymann/deterministic-zip/pkg/buildinfo.Version=$(VERSION) -X github.com/timo-reymann/deterministic-zip/pkg/buildinfo.BuildTime=$(NOW)"
 BIN_PREFIX="dist/deterministic-zip_"
 
 clean: ## Cleanup artifacts
@@ -50,8 +51,18 @@ build-openbsd: create-dist ## Build binaries for OpenBSD
     @CGO_ENABLED=0 GOOS=openbsd GOARCH=386 go build -o $(BIN_PREFIX)openbsd-i386 $(BUILD_ARGS)
 
 build-docker: ## Build docker image based on the built linux builds in the dist folder
-	docker buildx build --tag timoreymann/deterministic-zip:latest --platform linux/amd64,linux/arm/v7,linux/arm64 --push .
-	docker buildx build --tag timoreymann/deterministic-zip:$(VERSION) --platform linux/amd64,linux/arm/v7,linux/arm64 --push .
+	@docker buildx build --tag timoreymann/deterministic-zip:latest \
+		--platform linux/amd64,linux/arm/v7,linux/arm64 \
+		--build-arg BUILD_TIME="$(NOW)" \
+		--build-arg BUILD_VERSION="$(VERSION)" \
+		--build-arg BUILD_COMMIT_REF="$(COMMIT_REF)" \
+		--push .
+	@docker buildx build --tag timoreymann/deterministic-zip:$(VERSION) \
+		--platform linux/amd64,linux/arm/v7,linux/arm64 \
+		--build-arg BUILD_TIME="$(NOW)" \
+		--build-arg BUILD_VERSION="$(VERSION)" \
+		--build-arg BUILD_COMMIT_REF="$(COMMIT_REF)" \
+		--push .
 
 create-checksums: ## Create checksums for binaries
 	@find ./dist -type f -exec sh -c 'sha256sum {} | cut -d " " -f 1 > {}.sha256' {} \;

@@ -23,6 +23,5 @@ func (v Verbose) IsEnabled(c *cli.Configuration) bool {
 // Execute and set level to Debug
 func (v Verbose) Execute(c *cli.Configuration) error {
 	output.SetLevel(output.LevelDebug)
-	output.Debug("Enable verbose mode")
 	return nil
 }

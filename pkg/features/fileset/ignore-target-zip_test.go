@@ -6,18 +6,18 @@ import (
 	"testing"
 )
 
-func TestIgnoreTargetZipIsEnabled(t *testing.T) {
+func TestIgnoreTargetZip_IsEnabled(t *testing.T) {
 	ignoreZip := IgnoreTargetZip{}
 	if !ignoreZip.IsEnabled(&cli.Configuration{}) {
 		t.Fatal("The feature should be enabled by default")
 	}
 }
 
-func TestIgnoreTargetZipDebugName(t *testing.T) {
+func TestIgnoreTargetZip_DebugName(t *testing.T) {
 	testDebugName(t, (IgnoreTargetZip{}).DebugName(), "IgnoreTargetZip (builtin)")
 }
 
-func TestIgnoreTargetZipExecute(t *testing.T) {
+func TestIgnoreTargetZip_Execute(t *testing.T) {
 	ignoreZip := IgnoreTargetZip{}
 
 	testCases := []struct {

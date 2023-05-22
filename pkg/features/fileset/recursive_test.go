@@ -15,6 +15,10 @@ func TestRecursiveIsEnabled(t *testing.T) {
 	}
 }
 
+func TestRecursiveDebugName(t *testing.T) {
+	testDebugName(t, (Recursive{}).DebugName(), "Recursive")
+}
+
 func mockErr(msg string) *error {
 	err := errors.New(msg)
 	return &err

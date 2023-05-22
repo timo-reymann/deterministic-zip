@@ -34,6 +34,9 @@ func Execute() {
 	errCheck(err, c)
 
 	for _, f := range *features.Features() {
+		// Clean paths before each feature to take that logic off the features
+		c.CleanPaths()
+
 		if f.IsEnabled(c) {
 			output.Debugf("Executing feature %s ...", f.DebugName())
 			errCheck(f.Execute(c), c)

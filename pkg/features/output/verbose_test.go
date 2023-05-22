@@ -14,6 +14,10 @@ func TestVerboseIsEnabled(t *testing.T) {
 	}
 }
 
+func TestVerboseDebugName(t *testing.T) {
+	testDebugName(t, (Verbose{}).DebugName(), "Verbose")
+}
+
 func TestVerboseExecute(t *testing.T) {
 	verbose := Verbose{}
 	if err := verbose.Execute(nil); err != nil {

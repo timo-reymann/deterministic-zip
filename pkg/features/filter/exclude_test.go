@@ -16,6 +16,10 @@ func TestExcludeIsEnabled(t *testing.T) {
 	}
 }
 
+func TestExcludeDebugName(t *testing.T) {
+	testDebugName(t, (Exclude{}).DebugName(), "Exclude")
+}
+
 func TestExcludeExecute(t *testing.T) {
 	testCases := []struct {
 		sourceFiles []string

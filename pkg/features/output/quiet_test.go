@@ -14,6 +14,10 @@ func TestQuietIsEnabled(t *testing.T) {
 	}
 }
 
+func TestQuietDebugName(t *testing.T) {
+	testDebugName(t, (Quiet{}).DebugName(), "Quiet")
+}
+
 func TestQuietExecute(t *testing.T) {
 	_ = Quiet{}.Execute(nil)
 

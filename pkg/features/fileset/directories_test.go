@@ -14,6 +14,10 @@ func TestDirectoriesIsEnabled(t *testing.T) {
 	}
 }
 
+func TestDirectoriesDebugName(t *testing.T) {
+	testDebugName(t, (Directories{}).DebugName(), "Directories")
+}
+
 func TestDirectoriesExecute(t *testing.T) {
 	directories := Directories{}
 	testCases := []struct {

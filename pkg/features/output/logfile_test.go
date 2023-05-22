@@ -12,6 +12,10 @@ func TestLogFileIsEnabled(t *testing.T) {
 	lf.IsEnabled(&cli.Configuration{LogFilePath: "/tmp/log"})
 }
 
+func TestLogFileDebugName(t *testing.T) {
+	testDebugName(t, (LogFile{}).DebugName(), "LogFile")
+}
+
 func TestLogFileExecute(t *testing.T) {
 	lf := LogFile{}
 	err := lf.Execute(&cli.Configuration{LogFilePath: "/tmp/log"})

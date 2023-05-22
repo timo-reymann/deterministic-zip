@@ -16,6 +16,10 @@ func TestIncludeIsEnabled(t *testing.T) {
 	}
 }
 
+func TestIncludeDebugName(t *testing.T) {
+	testDebugName(t, (Include{}).DebugName(), "Include")
+}
+
 func TestIncludeExecute(t *testing.T) {
 	testCases := []struct {
 		sourceFiles []string

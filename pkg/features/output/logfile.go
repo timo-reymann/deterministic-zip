@@ -7,7 +7,11 @@ import (
 )
 
 // LogFile enables writing output to a log file
-type LogFile struct {
+type LogFile struct{}
+
+// DebugName returns the debuggable name
+func (l LogFile) DebugName() string {
+	return "LogFile"
 }
 
 // IsEnabled check if the logfile flag is enabled
@@ -23,9 +27,4 @@ func (l LogFile) Execute(c *cli.Configuration) error {
 
 	output.SetOutput(c.LogFilePath)
 	return nil
-}
-
-// DebugName returns the debuggable name
-func (l LogFile) DebugName() string {
-	return "LogFile"
 }

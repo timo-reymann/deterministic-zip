@@ -6,7 +6,7 @@ import (
 	"testing"
 )
 
-func TestDirectoriesIsEnabled(t *testing.T) {
+func TestDirectories_IsEnabled(t *testing.T) {
 	c := cli.Configuration{Directories: true}
 	directories := Directories{}
 	if !directories.IsEnabled(&c) {
@@ -14,7 +14,11 @@ func TestDirectoriesIsEnabled(t *testing.T) {
 	}
 }
 
-func TestDirectoriesExecute(t *testing.T) {
+func TestDirectories_DebugName(t *testing.T) {
+	testDebugName(t, (Directories{}).DebugName(), "Directories")
+}
+
+func TestDirectories_Execute(t *testing.T) {
 	directories := Directories{}
 	testCases := []struct {
 		sources      []string

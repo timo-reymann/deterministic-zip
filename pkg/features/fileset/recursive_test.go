@@ -7,7 +7,7 @@ import (
 	"testing"
 )
 
-func TestRecursiveIsEnabled(t *testing.T) {
+func TestRecursive_IsEnabled(t *testing.T) {
 	c := cli.Configuration{Recursive: true}
 	recursive := Recursive{}
 	if !recursive.IsEnabled(&c) {
@@ -15,12 +15,16 @@ func TestRecursiveIsEnabled(t *testing.T) {
 	}
 }
 
+func TestRecursive_DebugName(t *testing.T) {
+	testDebugName(t, (Recursive{}).DebugName(), "Recursive")
+}
+
 func mockErr(msg string) *error {
 	err := errors.New(msg)
 	return &err
 }
 
-func TestRecursiveExecute(t *testing.T) {
+func TestRecursive_Execute(t *testing.T) {
 	recursive := Recursive{}
 	testCases := []struct {
 		sources      []string
@@ -75,11 +79,9 @@ func TestRecursiveExecute(t *testing.T) {
 		err := recursive.Execute(&c)
 		if tc.err == nil && err != nil {
 			t.Fatalf("Expected no error but got %v", err)
-			t.FailNow()
 		} else if err != nil {
 			if (*tc.err).Error() != err.Error() {
 				t.Fatalf("Expected error %v, but got %v", *tc.err, err)
-				t.FailNow()
 			} else {
 				// Skip checking -> error thrown
 				continue

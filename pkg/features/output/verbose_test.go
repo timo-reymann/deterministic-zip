@@ -6,7 +6,7 @@ import (
 	"testing"
 )
 
-func TestVerboseIsEnabled(t *testing.T) {
+func TestVerbose_IsEnabled(t *testing.T) {
 	verboseConfig := cli.Configuration{Verbose: true}
 	verbose := Verbose{}
 	if !verbose.IsEnabled(&verboseConfig) {
@@ -14,7 +14,11 @@ func TestVerboseIsEnabled(t *testing.T) {
 	}
 }
 
-func TestVerboseExecute(t *testing.T) {
+func TestVerbose_DebugName(t *testing.T) {
+	testDebugName(t, (Verbose{}).DebugName(), "Verbose")
+}
+
+func TestVerbose_Execute(t *testing.T) {
 	verbose := Verbose{}
 	if err := verbose.Execute(nil); err != nil {
 		t.Fatal(err)

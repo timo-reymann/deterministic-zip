@@ -3,6 +3,7 @@ package cli
 import (
 	"errors"
 	flag "github.com/spf13/pflag"
+	"path/filepath"
 )
 
 // ErrMinimalParamsMissing states that the minimal arguments for the tool are not present, making it unprocessable
@@ -79,8 +80,19 @@ func (conf *Configuration) parseVarargs() error {
 	}
 
 	conf.ZipFile = remaining[0]
+
 	conf.SourceFiles = remaining[1:]
+
 	return nil
+}
+
+// CleanPaths ensure that all directories and files in the file set have clean path names
+func (conf *Configuration) CleanPaths() {
+	cleaned := make([]string, 0, len(conf.SourceFiles))
+	for _, f := range conf.SourceFiles {
+		cleaned = append(cleaned, filepath.Clean(f))
+	}
+	conf.SourceFiles = cleaned
 }
 
 func (conf *Configuration) Help() {

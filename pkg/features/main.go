@@ -42,4 +42,5 @@ func init() {
 	register(filter.Include{})
 	// Directories must always be processed after the Recursive, Exclude, Include modules
 	register(fileset.Directories{})
+	register(fileset.IgnoreTargetZip{})
 }

@@ -14,7 +14,7 @@ const LevelInfo = 0
 // LevelDebug shows verbose output
 const LevelDebug = 1
 
-var level = LevelInfo
+var level = LevelSilence
 
 var logFile = ""
 
@@ -75,5 +75,5 @@ func Debug(out string) {
 
 // Debugf same as Debug but with format string
 func Debugf(out string, vars ...interface{}) {
-	outputf(LevelDebug, out, vars...)
+	outputf(LevelDebug, "debug: "+out, vars...)
 }

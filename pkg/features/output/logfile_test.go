@@ -18,6 +18,7 @@ func TestLogFile_DebugName(t *testing.T) {
 
 func TestLogFile_Execute(t *testing.T) {
 	lf := LogFile{}
+	output.SetLevel(output.LevelInfo)
 	err := lf.Execute(&cli.Configuration{LogFilePath: "/tmp/log"})
 	if err != nil {
 		t.Fatal(err)

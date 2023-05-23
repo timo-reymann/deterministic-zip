@@ -3,6 +3,7 @@ package fileset
 import (
 	"github.com/timo-reymann/deterministic-zip/pkg/cli"
 	"reflect"
+	"sort"
 	"testing"
 )
 
@@ -85,6 +86,8 @@ func TestDirectories_Execute(t *testing.T) {
 			}
 		}
 
+		// Sort before test
+		sort.Strings(c.SourceFiles)
 		if !reflect.DeepEqual(tc.sourcesAfter, c.SourceFiles) {
 			t.Fatalf("Expected %v, but got %v", tc.sourcesAfter, c.SourceFiles)
 		}

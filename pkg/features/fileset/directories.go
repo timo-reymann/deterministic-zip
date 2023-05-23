@@ -6,7 +6,6 @@ import (
 	"github.com/timo-reymann/deterministic-zip/pkg/file"
 	"os"
 	"path/filepath"
-	"sort"
 )
 
 // Directories adds all children folders recursively
@@ -25,7 +24,6 @@ func (r Directories) IsEnabled(c *cli.Configuration) bool {
 // Execute and read all directories recursively and add them back to source files
 func (r Directories) Execute(c *cli.Configuration) error {
 	files := make(map[string]string, 0)
-	sort.Strings(c.SourceFiles)
 
 	for _, f := range c.SourceFiles {
 		isDir, err := file.IsDir(f)
@@ -43,7 +41,7 @@ func (r Directories) Execute(c *cli.Configuration) error {
 		includeParentDirs(&files, f)
 	}
 
-	c.SourceFiles = sortedKeySlice(&files)
+	c.SourceFiles = keySlice(&files)
 
 	return nil
 }
@@ -60,11 +58,10 @@ func includeParentDirs(m *map[string]string, path string) {
 	}
 }
 
-func sortedKeySlice(m *map[string]string) []string {
+func keySlice(m *map[string]string) []string {
 	keys := make([]string, 0, len(*m))
 	for k := range *m {
 		keys = append(keys, k)
 	}
-	sort.Strings(keys)
 	return keys
 }

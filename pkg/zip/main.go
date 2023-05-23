@@ -31,8 +31,6 @@ func createFileName(input string) string {
 func Create(c *cli.Configuration, compression uint16) error {
 	finalName := createFileName(c.ZipFile)
 
-	sort.Strings(c.SourceFiles)
-
 	newZipFile, err := os.OpenFile(finalName, os.O_RDWR|os.O_CREATE, 0666)
 	if err != nil {
 		return err
@@ -42,6 +40,7 @@ func Create(c *cli.Configuration, compression uint16) error {
 	zipWriter := zip.NewWriter(newZipFile)
 	registerCompressors(zipWriter)
 
+	sort.Strings(c.SourceFiles)
 	for _, srcFile := range c.SourceFiles {
 		if err := appendFile(srcFile, zipWriter, compression, conditions.OnFlag(c.Directories)); err != nil {
 			return err
@@ -61,7 +60,7 @@ func appendFile(srcFile string, zipWriter *zip.Writer, compression uint16, inclu
 	output.Infof("Adding %s", srcFile)
 
 	f, err := os.Open(srcFile)
-	
+
 	// Ensure the open file is always closed, ignoring any errors during the close
 	defer func(f *os.File) {
 		if f != nil {

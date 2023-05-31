@@ -9,6 +9,7 @@ job_defaults: &job_defaults
 orbs:
   github-cli: circleci/github-cli@2.2.0
   docker: circleci/docker@2.2.0
+  codecov: codecov/codecov@3.2.5
 
 executors:
   go:
@@ -33,7 +34,7 @@ jobs:
           name: Get test coverage
           command: |
             go test -race -coverprofile=coverage.txt -covermode=atomic  -v ./...
-            bash <(curl -s https://codecov.io/bash)
+      - codecov/upload
       - store_test_results:
           path: unit-tests.xml
       - store_artifacts:

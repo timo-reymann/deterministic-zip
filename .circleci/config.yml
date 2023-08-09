@@ -14,7 +14,7 @@ orbs:
 executors:
   go:
     docker:
-      - image: cimg/go:1.20
+      - image: cimg/go:1.21
   python:
     docker:
       - image: cimg/python:3.11

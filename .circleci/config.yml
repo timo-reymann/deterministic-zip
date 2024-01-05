@@ -174,4 +174,4 @@ workflows:
             tags:
               only: /.*/
           requires:
-            - create_github_release
+            - build

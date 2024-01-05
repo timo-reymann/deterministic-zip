@@ -13,7 +13,7 @@ deterministic-zip
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Ftimo-reymann%2Fdeterministic-zip.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Ftimo-reymann%2Fdeterministic-zip?ref=badge_shield)
 
 <p align="center">
-	<img width="300" src="./.github/images/logo.png">
+	<img width="300" src="https://raw.githubusercontent.com/timo-reymann/deterministic-zip/main/.github/images/logo.png">
     <br />
     Simple (almost drop-in) replacement for zip that produces deterministic files.
 </p>

@@ -1,6 +1,7 @@
 deterministic-zip
 ===
 [![GitHub Release](https://img.shields.io/github/v/release/timo-reymann/deterministic-zip?label=version)](https://github.com/timo-reymann/deterministic-zip/releases/latest)
+[![PyPI version](https://badge.fury.io/py/deterministic_zip_go.svg)](https://pypi.org/project/deterministic_zip_go)
 [![DockerHub Pulls](https://img.shields.io/docker/pulls/timoreymann/deterministic-zip)](https://hub.docker.com/r/timoreymann/deterministic-zip)
 [![GitHub all releases download count](https://img.shields.io/github/downloads/timo-reymann/deterministic-zip/total)](https://github.com/timo-reymann/deterministic-zip/releases)
 [![CircleCI Build Status](https://circleci.com/gh/timo-reymann/deterministic-zip.svg?style=shield)](https://app.circleci.com/pipelines/github/timo-reymann/deterministic-zip)
@@ -19,6 +20,7 @@ deterministic-zip
 </p>
 
 ## Features
+
 - dropin for zip
 - remove all metadata from files added
 - immutable zip util
@@ -64,7 +66,40 @@ sudo mv deterministic-zip_darwin-amd64 /usr/local/bin/deterministic-zip
 go get -u github.com/timo-reymann/deterministic-zip
 ```
 
+### Install with pip(x)
+
+Using pipx you can just use the following command use deterministic-zip as it is:
+
+```sh
+pipx install deterministic-zip-go
+```
+
+If you want to use it directly using the `subprocess` module you can install it with pip:
+
+````sh
+pip install deterministic-zip-go
+````
+
+And use the package like this:
+
+````python
+import subprocess
+
+from deterministic_zip_go import exec
+
+# Run process and prefix stdout and stderr
+exec.exec_with_templated_output(["--help"])
+
+# Create a subprocess, specifying how to handle stdout, stderr
+exec.create_subprocess(["--help"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+
+# Perform command with suppressed output and return finished proces instance,
+# on that one can also check if the call was successfully
+exec.exec_silently(["--version"])
+````
+
 #### Docker
+
 Please check the [Containerized section in Usage](#containerized) for
 more details.
 
@@ -86,28 +121,32 @@ ready to use integration):
     - 32-bit
     - 64-bit
 - FreeBSD
-  - 32-bit
-  - 64-bit
-  - ARM 64-bit
-  - ARM 32-bit
+    - 32-bit
+    - 64-bit
+    - ARM 64-bit
+    - ARM 32-bit
 - OpenBSD
-  - 32-bit
-  - 64-bit
+    - 32-bit
+    - 64-bit
 - OCI compatible container engines (Docker, podman etc)
-  - ARM
-  - 64-bit
+    - ARM
+    - 64-bit
 - CircleCI
 - GitHub Actions
 
 ### Where to find the latest release for your platform
 
 #### Binaries
-Binaries for all of these can be found on the [latest release page](https://github.com/timo-reymann/deterministic-zip/releases/latest).
+
+Binaries for all of these can be found on
+the [latest release page](https://github.com/timo-reymann/deterministic-zip/releases/latest).
 
 #### Docker
+
 For the docker image check the [docker hub](https://hub.docker.com/r/timoreymann/deterministic-zip).
 
 #### CI Provider
+
 - [CircleCI orb](https://circleci.com/developer/orbs/orb/timo-reymann/deterministic-zip)
 - [GitHub Action](https://github.com/marketplace/actions/run-deterministic-zip)
 
@@ -194,6 +233,7 @@ do it!
 Please see [docs/differences](./docs/differences)
 
 ## Contributing
+
 I love your input! I want to make contributing to this project as easy and transparent as possible, whether it's:
 
 - Reporting a bug
@@ -207,15 +247,18 @@ To get started please read the [Contribution Guidelines](./CONTRIBUTING.md).
 ## Development
 
 ### Requirements
+
 - [Go](https://go.dev/doc/install)
 - [GNU make](https://www.gnu.org/software/make/)
 
 ### Test
+
 ```sh
 make test-coverage-report
 ```
 
 ### Build
+
 ```sh
 make build
 ```
@@ -240,7 +283,6 @@ Something that's very convenient especially when it comes to Docker builds.
 
 The main problem that all these solutions share is that it in my opinion cool things like excluding patterns, that I
 regularly use are simply not implemented, and i REALLY love glob patterns.
-
 
 ## Credits
 

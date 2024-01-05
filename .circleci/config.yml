@@ -107,6 +107,27 @@ jobs:
           command: |
             gh release create ${CIRCLE_TAG} --generate-notes dist/*
 
+  publish_python_wheel:
+    executor: python
+    steps:
+      - checkout
+      - attach_workspace:
+          at: .
+          name: Retrieve persisted binaries
+      - run:
+          name: Install dependencies
+          command: |
+            pip install twine==4.* binary_wheel_builder==2.*
+      - run:
+          name: Build wheel
+          command: |
+            mkdir -p dist/wheel/
+            binary-wheel-builder --wheel-spec wheel.yaml --dist-folder dist/wheel/
+      - run:
+          name: Upload wheel
+          command: |
+            twine upload -r pypi dist/wheel/* 
+
 workflows:
   version: 2
   build:
@@ -146,3 +167,11 @@ workflows:
           requires:
             - create_github_release
 
+      - publish_python_wheel:
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /.*/
+          requires:
+            - create_github_release

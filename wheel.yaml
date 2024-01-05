@@ -1,0 +1,24 @@
+package: deterministic_zip_go
+executable: deterministic-zip
+name: deterministic-zip-go
+version: !Env CIRCLE_TAG
+summary: deterministic-zip wrapped for usage with pip and/or python.
+description: !FileContent README.md
+license: MIT
+requires_python: ">=3.8"
+classifier: []
+project_urls:
+  "Homepage": "https://github.com/timo-reymann/deterministic-zip"
+  "Source Code": "https://github.com/timo-reymann/deterministic-zip.git"
+  "Bug Tracker": "https://github.com/timo-reymann/deterministic-zip"
+source: !WheelSource
+  implementation: binary_wheel_builder.api.wheel_sources.platform_based_file.PlatformBasedFileSource
+  executable_path: deterministic-zip
+  file_name_mapping:
+    !WellknownPlatform MAC_SILICONE: "dist/deterministic-zip_darwin-arm64"
+    !WellknownPlatform MAC_INTEL: "dist/deterministic-zip_darwin-amd64"
+    !WellknownPlatform LINUX_GENERIC_x84_64: "dist/deterministic-zip_linux-amd64"
+platforms:
+  - !WellknownPlatform MAC_INTEL
+  - !WellknownPlatform MAC_SILICONE
+  - !WellknownPlatform LINUX_GENERIC_x84_64

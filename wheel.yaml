@@ -20,5 +20,5 @@ source: !WheelSource
     !WellknownPlatform LINUX_GENERIC_x84_64: "dist/deterministic-zip_linux-amd64"
 platforms:
   - !WellknownPlatform MAC_INTEL
-  - !WellknownPlatform MAC_SILICONE
+  - !WellknownPlatform MAC_SILICON
   - !WellknownPlatform LINUX_GENERIC_x84_64

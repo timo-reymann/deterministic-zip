@@ -62,7 +62,7 @@ jobs:
       - attach_workspace:
           at: ./
       - setup_remote_docker:
-          version: 20.10.14
+          version: default
       - run:
           name: Build and publish image
           command: |

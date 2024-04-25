@@ -55,8 +55,7 @@ jobs:
             - dist/
 
   publish_docker_image:
-    machine:
-      image: ubuntu-2004:current    
+    executor: docker/docker
     steps:
       - checkout
       - attach_workspace:

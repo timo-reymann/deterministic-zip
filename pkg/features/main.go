@@ -37,6 +37,7 @@ func init() {
 	register(output.LogFile{})
 	register(output.Verbose{})
 	register(output.Quiet{})
+	register(fileset.IgnoreNonExistent{})
 	register(fileset.Recursive{})
 	register(filter.Exclude{})
 	register(filter.Include{})

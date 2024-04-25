@@ -15,7 +15,7 @@ source: !WheelSource
   implementation: binary_wheel_builder.api.wheel_sources.platform_based_file.PlatformBasedFileSource
   executable_path: deterministic-zip
   file_name_mapping:
-    !WellknownPlatform MAC_SILICONE: "dist/deterministic-zip_darwin-arm64"
+    !WellknownPlatform MAC_SILICON: "dist/deterministic-zip_darwin-arm64"
     !WellknownPlatform MAC_INTEL: "dist/deterministic-zip_darwin-amd64"
     !WellknownPlatform LINUX_GENERIC_x84_64: "dist/deterministic-zip_linux-amd64"
 platforms:

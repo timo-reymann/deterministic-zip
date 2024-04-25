@@ -63,7 +63,7 @@ sudo mv deterministic-zip_darwin-amd64 /usr/local/bin/deterministic-zip
 ### Install with go
 
 ```bash
-go get -u github.com/timo-reymann/deterministic-zip
+go install github.com/timo-reymann/deterministic-zip@latest
 ```
 
 ### Install with pip(x)

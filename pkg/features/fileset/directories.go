@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 )
 
-// Directories adds all children folders recursively
+// Directories add all children folders recursively
 type Directories struct{}
 
 // DebugName prints the debuggable name

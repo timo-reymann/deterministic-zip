@@ -4,6 +4,8 @@ import (
 	"errors"
 	flag "github.com/spf13/pflag"
 	"path/filepath"
+	"runtime"
+	"strings"
 )
 
 // ErrMinimalParamsMissing states that the minimal arguments for the tool are not present, making it unprocessable
@@ -86,11 +88,27 @@ func (conf *Configuration) parseVarargs() error {
 	return nil
 }
 
+func cleanPath(path string, isRetardedPlatform bool) string {
+	if !isRetardedPlatform {
+		return filepath.Clean(path)
+	}
+
+	windowsPath := filepath.Clean(path)
+	properPath := strings.ReplaceAll(windowsPath, "\\", "/")
+	return properPath
+}
+
 // CleanPaths ensure that all directories and files in the file set have clean path names
 func (conf *Configuration) CleanPaths() {
+	var isRetardedPlatform bool
+	if runtime.GOOS == "windows" {
+		isRetardedPlatform = true
+	} else {
+		isRetardedPlatform = false
+	}
 	cleaned := make([]string, 0, len(conf.SourceFiles))
 	for _, f := range conf.SourceFiles {
-		cleaned = append(cleaned, filepath.Clean(f))
+		cleaned = append(cleaned, cleanPath(f, isRetardedPlatform))
 	}
 	conf.SourceFiles = cleaned
 }

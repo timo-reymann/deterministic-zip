@@ -118,7 +118,7 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-            pip install twine==4.* binary_wheel_builder[cli]==3.*
+            pip install twine==5.* binary_wheel_builder[cli]==3.*
       - run:
           name: Build wheel
           command: |

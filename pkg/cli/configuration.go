@@ -98,14 +98,10 @@ func cleanPath(path string, isRetardedPlatform bool) string {
 	return properPath
 }
 
+const isRetardedPlatform = runtime.GOOS == "windows"
+
 // CleanPaths ensure that all directories and files in the file set have clean path names
 func (conf *Configuration) CleanPaths() {
-	var isRetardedPlatform bool
-	if runtime.GOOS == "windows" {
-		isRetardedPlatform = true
-	} else {
-		isRetardedPlatform = false
-	}
 	cleaned := make([]string, 0, len(conf.SourceFiles))
 	for _, f := range conf.SourceFiles {
 		cleaned = append(cleaned, cleanPath(f, isRetardedPlatform))

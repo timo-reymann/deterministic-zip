@@ -34,8 +34,7 @@ jobs:
           name: Get test coverage
           command: |
             go test -race -coverprofile=coverage.txt -covermode=atomic  -v ./...
-      # Disabled for now
-      # - codecov/upload
+      - codecov/upload
       - store_test_results:
           path: unit-tests.xml
       - store_artifacts:

@@ -6,7 +6,20 @@ summary: deterministic-zip wrapped for usage with pip and/or python.
 description: !FileContent README.md
 license: MIT
 requires_python: ">=3.8"
-classifier: []
+classifier:
+  - "Development Status :: 5 - Production/Stable"
+  - "Intended Audience :: Developers"
+  - "Environment :: Console"
+  - "Environment :: MacOS X"
+  - "Operating System :: POSIX"
+  - "Operating System :: Unix"
+  - "Environment :: Win32 (MS Windows)"
+  - "Programming Language :: Python :: 3"
+  - "Programming Language :: Python :: 3.8"
+  - "Programming Language :: Python :: 3.9"
+  - "Programming Language :: Python :: 3.10"
+  - "Programming Language :: Python :: 3.11"
+  - "Programming Language :: Python :: 3.12"
 project_urls:
   "Homepage": "https://github.com/timo-reymann/deterministic-zip"
   "Source Code": "https://github.com/timo-reymann/deterministic-zip.git"

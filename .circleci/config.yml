@@ -7,7 +7,7 @@ job_defaults: &job_defaults
 
 
 orbs:
-  github-cli: circleci/github-cli@2.6.0
+  github-cli: circleci/github-cli@2.6.1
   docker: circleci/docker@2.8.1
   codecov: codecov/codecov@5.0.3
 

@@ -4,3 +4,4 @@ coverage:
   range: "50...75"
 ignore:
   - "cmd/*.go"
+  - "pkg/buildinfo/*.go"

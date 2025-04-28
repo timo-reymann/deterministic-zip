@@ -31,19 +31,14 @@ jobs:
             - run:
                 name: Run tests
                 command: |
-                  gotestsum --junitfile unit-tests.xml
-                  make save-coverage-report
-            - run:
-                name: Get test coverage
-                command: |
-                  go test -race -coverprofile=coverage.txt -covermode=atomic  -v ./...
+                  gotestsum --junitfile junit.xml -- -race -coverprofile=coverage.txt -covermode=atomic -v ./...
       - codecov/upload
       - store_test_results:
-          path: unit-tests.xml
+          path: junit.xml
       - store_artifacts:
-          path: unit-tests.xml
+          path: junit.xml
       - store_artifacts:
-          path: coverage.html
+          path: coverage.txt
 
   build:
     executor: go

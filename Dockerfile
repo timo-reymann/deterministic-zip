@@ -27,6 +27,6 @@ LABEL org.opencontainers.image.created=$BUILD_TIME
 LABEL org.opencontainers.image.version=$BUILD_VERSION
 LABEL org.opencontainers.image.revision=$BUILD_COMMIT_REF
 
-COPY --from=bin /bin/deterministic-zip /deterministic-zip
+COPY --from=bin /bin/deterministic-zip /bin/deterministic-zip
 WORKDIR /workspace
-ENTRYPOINT [ "/deterministic-zip" ]
+ENTRYPOINT [ "/bin/deterministic-zip" ]

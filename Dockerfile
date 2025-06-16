@@ -9,7 +9,7 @@ RUN if [[ "$(arch)" == "x86_64" ]]; then \
     chmod +x /bin/deterministic-zip && \
     chown 1000:1000 /bin/deterministic-zip
 
-FROM scratch
+FROM alpine
 LABEL org.opencontainers.image.title="deterministic-zip"
 LABEL org.opencontainers.image.description="Simple (almost drop-in) replacement for zip that produces deterministic files."
 LABEL org.opencontainers.image.ref.name="master"

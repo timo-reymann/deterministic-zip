@@ -9,19 +9,22 @@ import (
 	"os"
 )
 
+// Variable to allow mocking os.Exit in tests
+var osExit = os.Exit
+
 func errCheck(err error, c *cli.Configuration) {
 	if err == cli.ErrAbort {
-		os.Exit(0)
+		osExit(0)
 	}
 
 	if err == cli.ErrMinimalParamsMissing {
 		c.Help()
-		os.Exit(2)
+		osExit(2)
 	}
 
 	if err != nil {
 		log.Println(err)
-		os.Exit(2)
+		osExit(2)
 	}
 }
 

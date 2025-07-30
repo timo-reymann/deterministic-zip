@@ -438,3 +438,39 @@ func TestParseModifiedDate(t *testing.T) {
 		})
 	}
 }
+
+func TestConfiguration_ModifiedDate(t *testing.T) {
+	tests := []struct {
+		name          string
+		configuration *Configuration
+		expectedTime  time.Time
+		expectedErr   bool
+	}{
+		{
+			name:          "modified date not set",
+			configuration: &Configuration{
+				// Assuming the modified date field is empty/zero
+			},
+			expectedTime: DefaultModifiedTimestamp,
+			expectedErr:  true,
+		},
+		{
+			name: "modified date set",
+			configuration: &Configuration{
+				modifiedDate: time.Unix(1703520645, 0).UTC(),
+			},
+			expectedTime: time.Unix(1703520645, 0).UTC(),
+			expectedErr:  false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			result := tt.configuration.ModifiedDate()
+
+			if !result.Equal(tt.expectedTime) {
+				t.Errorf("Configuration.ModifiedDate() = %v, expected %v", result, tt.expectedTime)
+			}
+		})
+	}
+}

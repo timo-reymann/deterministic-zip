@@ -1,6 +1,9 @@
 package output
 
-import "testing"
+import (
+	"path/filepath"
+	"testing"
+)
 
 func TestInfo(t *testing.T) {
 	Info("test")
@@ -35,4 +38,12 @@ func TestInfof(t *testing.T) {
 
 func TestDebugf(t *testing.T) {
 	Debugf("test %s", "foo")
+}
+
+func TestSetOutput(t *testing.T) {
+	logPath := filepath.Join(t.TempDir(), "test.log")
+	SetOutput(logPath)
+	if logFile != logPath {
+		t.Errorf("Expected log file %s, got %s", logPath, logFile)
+	}
 }

@@ -3,6 +3,7 @@ package cli
 import (
 	"errors"
 	flag "github.com/spf13/pflag"
+	"os"
 	"path/filepath"
 	"runtime"
 	"strings"
@@ -45,25 +46,28 @@ type Configuration struct {
 
 	// LogFileAppend specifies if the file should be appended
 	LogFileAppend bool
+
+	flagSet *flag.FlagSet
 }
 
 func (conf *Configuration) addBoolFlag(field *bool, long string, short string, val bool, usage string) {
-	flag.BoolVarP(field, long, short, val, usage)
+	conf.flagSet.BoolVarP(field, long, short, val, usage)
 }
 
 func (conf *Configuration) addStringsFlag(field *[]string, long string, short string, val []string, usage string) {
 	if short == "" {
-		flag.StringSliceVar(field, long, val, usage)
+		conf.flagSet.StringSliceVar(field, long, val, usage)
 	} else {
-		flag.StringSliceVarP(field, long, short, val, usage)
+		conf.flagSet.StringSliceVarP(field, long, short, val, usage)
 	}
 }
 
 func (conf *Configuration) addStringFlag(field *string, long string, short string, val string, usage string) {
-	flag.StringVarP(field, long, short, val, usage)
+	conf.flagSet.StringVarP(field, long, short, val, usage)
 }
 
 func (conf *Configuration) defineFlags() {
+	conf.flagSet = flag.NewFlagSet("deterministic-zip", flag.ErrorHandling(flag.ContinueOnError))
 	conf.addBoolFlag(&conf.Verbose, "verbose", "v", false, "Verbose mode or print diagnostic version info.")
 	conf.addBoolFlag(&conf.Directories, "directories", "D", false, "Include directories in the zip file.")
 	conf.addBoolFlag(&conf.Recursive, "recurse-paths", "r", false, "Include all files verbose")
@@ -73,6 +77,7 @@ func (conf *Configuration) defineFlags() {
 	conf.addStringFlag(&conf.CompressionMethod, "compression-method", "Z", "deflate", "Set the default compression method. \nCurrently the main methods supported by zip are store and deflate. \nCompression method can be set to:\n\nstore       Setting the compression method to store forces to store entries with no compression. \n            This is generally faster than compressing entries, but results in no space savings.\n\ndeflate     This is the default method for zip. If zip determines that storing is better than deflation, the entry will be stored instead.\n")
 	conf.addStringFlag(&conf.LogFilePath, "logfile-path", "", "", "Open a logfile at the given path.\nBy default any existing file at that location is overwritten, but the --log-append option will result in an existing file being opened and the new log information appended to any existing information.")
 	conf.addBoolFlag(&conf.LogFileAppend, "log-append", "", false, "Append to existing logfile. Default is to overwrite.")
+	conf.flagSet.BoolP("Help", "h", false, "Show available commands")
 }
 
 func (conf *Configuration) parseVarargs() error {
@@ -119,11 +124,10 @@ func (conf *Configuration) Help() {
 func (conf *Configuration) Parse() error {
 	conf.defineFlags()
 
-	isHelp := flag.BoolP("Help", "h", false, "Show available commands")
-	isVersion := flag.Bool("version", false, "Show version info")
-	flag.Parse()
+	isVersion := conf.flagSet.Bool("version", false, "Show version info")
+	err := conf.flagSet.Parse(os.Args[1:])
 
-	if *isHelp {
+	if errors.Is(err, flag.ErrHelp) {
 		conf.Help()
 		return ErrAbort
 	} else if *isVersion {

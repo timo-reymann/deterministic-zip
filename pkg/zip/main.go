@@ -18,9 +18,6 @@ const extension = ".zip"
 
 var extra = make([]byte, 0)
 
-// ModifiedTimestamp contains the default modification timestamp used for all files in the archive
-var ModifiedTimestamp = time.Date(2018, 11, 01, 0, 0, 0, 0, time.UTC)
-
 func createFileName(baseName string) string {
 	// Check if the file already has an extension
 	if filepath.Ext(baseName) != "" {
@@ -45,7 +42,7 @@ func Create(c *cli.Configuration, compression uint16) error {
 
 	sort.Strings(c.SourceFiles)
 	for _, srcFile := range c.SourceFiles {
-		if err := appendFile(srcFile, zipWriter, compression, conditions.OnFlag(c.Directories)); err != nil {
+		if err := appendFile(srcFile, zipWriter, compression, c.ModifiedDate(), conditions.OnFlag(c.Directories)); err != nil {
 			return err
 		}
 	}
@@ -59,7 +56,7 @@ func registerCompressors(zipWriter *zip.Writer) {
 	})
 }
 
-func appendFile(srcFile string, zipWriter *zip.Writer, compression uint16, includeDirs bool) error {
+func appendFile(srcFile string, zipWriter *zip.Writer, compression uint16, modifiedTimestamp time.Time, includeDirs bool) error {
 	output.Infof("Adding %s", srcFile)
 
 	f, err := os.Open(srcFile)
@@ -88,7 +85,7 @@ func appendFile(srcFile string, zipWriter *zip.Writer, compression uint16, inclu
 	if err != nil {
 		return err
 	}
-	h.Modified = ModifiedTimestamp
+	h.Modified = modifiedTimestamp
 	h.Method = compression
 	h.Name = srcFile
 	h.Extra = extra

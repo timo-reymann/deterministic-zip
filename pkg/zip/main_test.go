@@ -303,7 +303,7 @@ func TestCreate(t *testing.T) {
 						t.Fatalf("Expected file %s to be in archive", expectedFile.name)
 					}
 
-					if foundFile.Modified.Sub(ModifiedTimestamp) != 0 {
+					if foundFile.Modified.Sub(cli.DefaultModifiedTimestamp) != 0 {
 						t.Fatalf("Modified timestamp not reset for file %s", expectedFile.name)
 					}
 

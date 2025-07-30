@@ -3,6 +3,7 @@ package cli
 import (
 	"os"
 	"testing"
+	"time"
 )
 
 func TestNewConfiguration(t *testing.T) {
@@ -353,6 +354,87 @@ func TestConfiguration_Parse_MultipleInstances(t *testing.T) {
 			config2.Parse()
 
 			t.Logf("Multiple Parse() calls with args %v completed successfully", tt.args)
+		})
+	}
+}
+func TestParseModifiedDate(t *testing.T) {
+	tests := []struct {
+		name     string
+		input    string
+		expected time.Time
+		wantErr  bool
+	}{
+		{
+			name:     "valid unix timestamp",
+			input:    "1703520645",
+			expected: time.Unix(1703520645, 0).UTC(),
+			wantErr:  false,
+		},
+		{
+			name:     "zero timestamp",
+			input:    "0",
+			expected: time.Unix(0, 0).UTC(),
+			wantErr:  false,
+		},
+		{
+			name:     "negative timestamp",
+			input:    "-86400",
+			expected: time.Unix(-86400, 0).UTC(),
+			wantErr:  false,
+		},
+		{
+			name:     "future timestamp",
+			input:    "2147483647",
+			expected: time.Unix(2147483647, 0).UTC(),
+			wantErr:  false,
+		},
+		{
+			name:    "invalid non-numeric input",
+			input:   "not-a-number",
+			wantErr: true,
+		},
+		{
+			name:     "empty string",
+			input:    "",
+			wantErr:  false,
+			expected: DefaultModifiedTimestamp,
+		},
+		{
+			name:    "floating point number",
+			input:   "1703520645.5",
+			wantErr: true,
+		},
+		{
+			name:    "timestamp with letters",
+			input:   "1703520645abc",
+			wantErr: true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			conf := &Configuration{}
+			err := os.Setenv("SOURCE_DATE_EPOCH", tt.input)
+			if err != nil {
+				t.Fatal(err)
+			}
+			result, err := conf.parseModifiedDate()
+
+			if tt.wantErr {
+				if err == nil {
+					t.Errorf("parseModifiedDate() expected error but got none")
+				}
+				return
+			}
+
+			if err != nil {
+				t.Errorf("parseModifiedDate() unexpected error: %v", err)
+				return
+			}
+
+			if !result.Equal(tt.expected) {
+				t.Errorf("parseModifiedDate() = %v, expected %v", result, tt.expected)
+			}
 		})
 	}
 }

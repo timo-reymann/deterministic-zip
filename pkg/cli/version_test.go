@@ -17,9 +17,9 @@ func TestPrintVersionInfo_SmokeTest(t *testing.T) {
 	}
 
 	// Redirect stdout to our pipe
-	os.Stdout = w
-	origStdout := os.Stdout
-	defer func() { os.Stdout = origStdout }()
+	origStderr := os.Stderr
+	defer func() { os.Stderr = origStderr }()
+	os.Stderr = w
 
 	// Channel to receive the captured output
 	outputChan := make(chan string, 1)
@@ -69,9 +69,9 @@ func TestPrintVersionInfo_OutputFormat(t *testing.T) {
 	}
 
 	// Redirect stdout to our pipe
-	origStdout := os.Stdout
-	defer func() { os.Stdout = origStdout }()
-	os.Stdout = w
+	origStderr := os.Stderr
+	defer func() { os.Stderr = origStderr }()
+	os.Stderr = w
 
 	// Channel to receive the captured output
 	outputChan := make(chan string, 1)

@@ -44,9 +44,11 @@ jobs:
     executor: go
     steps:
       - checkout
-      - run:
-          name: Build binaries
-          command: make build
+      - go/with-cache:
+          steps:
+            - run:
+                name: Build binaries
+                command: make build
       - persist_to_workspace:
           root: ./
           paths:
@@ -70,7 +72,7 @@ jobs:
           image: timoreymann/deterministic-zip
           docker-username: DOCKER_USERNAME
           docker-password: DOCKER_TOKEN
- 
+
   update_homebrew_formula:
     executor: python
     steps:
@@ -98,7 +100,7 @@ jobs:
       - attach_workspace:
           at: .
           name: Retrieve persisted binaries
-      -  github-cli/install:
+      - github-cli/install:
           version: "2.21.2"
       - run:
           name: Publish release

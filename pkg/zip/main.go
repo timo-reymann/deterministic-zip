@@ -8,6 +8,7 @@ import (
 	"github.com/timo-reymann/deterministic-zip/pkg/output"
 	"io"
 	"os"
+	"path/filepath"
 	"sort"
 	"strings"
 	"time"
@@ -20,11 +21,13 @@ var extra = make([]byte, 0)
 // ModifiedTimestamp contains the default modification timestamp used for all files in the archive
 var ModifiedTimestamp = time.Date(2018, 11, 01, 0, 0, 0, 0, time.UTC)
 
-func createFileName(input string) string {
-	if strings.HasSuffix(input, extension) {
-		return input
+func createFileName(baseName string) string {
+	// Check if the file already has an extension
+	if filepath.Ext(baseName) != "" {
+		return baseName
 	}
-	return input + extension
+
+	return baseName + extension
 }
 
 // Create new zip file with the given configuration and compression method

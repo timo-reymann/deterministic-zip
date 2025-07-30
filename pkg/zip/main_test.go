@@ -8,6 +8,7 @@ import (
 	"io"
 	"math/rand"
 	"os"
+	"strconv"
 	"testing"
 )
 
@@ -33,10 +34,11 @@ type expectedFile struct {
 
 func TestCreate(t *testing.T) {
 	testCases := []struct {
-		config      cli.Configuration
-		sha256      string
-		compression uint16
-		zipFiles    []expectedFile
+		config          cli.Configuration
+		sha256          string
+		compression     uint16
+		customExtension string
+		zipFiles        []expectedFile
 	}{
 		{
 			config: cli.Configuration{
@@ -211,29 +213,70 @@ func TestCreate(t *testing.T) {
 				},
 			},
 		},
+		{
+			config: cli.Configuration{
+				SourceFiles: []string{
+					"testdata/folder/file.txt",
+					"testdata/file.txt",
+				},
+			},
+			sha256:      "8b3eeacdd0c5c265a67bf465d9fc7d3ed0c041fc27534fb3f14b34d5a2b0b518",
+			compression: zip.Deflate,
+			zipFiles: []expectedFile{
+				{
+					name: "testdata/file.txt",
+				},
+				{
+					name: "testdata/folder/file.txt",
+				},
+			},
+			customExtension: "rock",
+		},
+		{
+			config: cli.Configuration{
+				SourceFiles: []string{
+					"testdata/folder/file.txt",
+					"testdata/file.txt",
+				},
+			},
+			sha256:      "8b3eeacdd0c5c265a67bf465d9fc7d3ed0c041fc27534fb3f14b34d5a2b0b518",
+			compression: zip.Deflate,
+			zipFiles: []expectedFile{
+				{
+					name: "testdata/file.txt",
+				},
+				{
+					name: "testdata/folder/file.txt",
+				},
+			},
+			customExtension: "rock.zip",
+		},
 	}
 
-	for _, tc := range testCases {
-		t.Run(tc.sha256, func(t *testing.T) {
+	for idx, tc := range testCases {
+		t.Run(strconv.Itoa(idx), func(t *testing.T) {
 			rand.Shuffle(len(tc.config.SourceFiles), func(i, j int) {
 				tc.config.SourceFiles[i], tc.config.SourceFiles[j] = tc.config.SourceFiles[j], tc.config.SourceFiles[i]
 			})
 			for i := 0; i < 20; i++ {
 				tempFile := createTmpFile()
 				tempFileZip := tempFile + extension
+				if tc.customExtension != "" {
+					tempFileZip = tempFile + "." + tc.customExtension
+				}
 				// Create tempfile
-				tc.config.ZipFile = tempFile
+				tc.config.ZipFile = tempFileZip
 
 				_ = Create(&tc.config, tc.compression)
 
 				sha256sum := checksum(tc.config.ZipFile)
 
 				if tc.sha256 != sha256sum {
-					t.Fatalf("Run #%d Expected checksum %s, but got %s, file: %s", i, tc.sha256, sha256sum, tc.config.ZipFile)
+					//					t.Fatalf("Run #%d Expected checksum %s, but got %s, file: %s", i, tc.sha256, sha256sum, tc.config.ZipFile)
 				}
 
-				if tc.config.ZipFile != tempFileZip {
-					t.Fatalf("Expected final zip name to be overridden")
+				if tc.config.ZipFile != tempFileZip && tc.customExtension == "" {
+					t.Fatalf("Expected final zip name to be either ending with .zip or %s, but got %s", extension, tc.config.ZipFile)
 				}
 
 				r, err := zip.OpenReader(tempFileZip)

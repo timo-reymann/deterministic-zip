@@ -21,9 +21,10 @@ deterministic-zip
 
 ## Features
 
-- dropin for zip
-- remove all metadata from files added
-- immutable zip util
+- Drop-in tool for zip
+- Removes all metadata from files added for all platforms
+- Creates immutable zip files
+- Supports [`SOURCE_DATE_EPOCH`](https://reproducible-builds.org/docs/source-date-epoch/) for setting the modified date
 
 ## Installation
 

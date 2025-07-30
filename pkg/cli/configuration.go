@@ -2,12 +2,18 @@ package cli
 
 import (
 	"errors"
+	"fmt"
 	flag "github.com/spf13/pflag"
 	"os"
 	"path/filepath"
 	"runtime"
+	"strconv"
 	"strings"
+	"time"
 )
+
+// ModifiedTimestamp contains the default modification timestamp used for all files in the archive
+var DefaultModifiedTimestamp = time.Date(2018, 11, 01, 0, 0, 0, 0, time.UTC)
 
 // ErrMinimalParamsMissing states that the minimal arguments for the tool are not present, making it unprocessable
 var ErrMinimalParamsMissing = errors.New("required arguments for target file and at least one source missing")
@@ -46,6 +52,9 @@ type Configuration struct {
 
 	// LogFileAppend specifies if the file should be appended
 	LogFileAppend bool
+
+	// ModifiedDate represents the timestamp set for the modification time of all files in the zip file
+	modifiedDate time.Time
 
 	flagSet *flag.FlagSet
 }
@@ -120,6 +129,20 @@ func (conf *Configuration) Help() {
 	flag.PrintDefaults()
 }
 
+func (conf *Configuration) parseModifiedDate() (*time.Time, error) {
+	sourceDateEpoch := os.Getenv("SOURCE_DATE_EPOCH")
+	if sourceDateEpoch == "" {
+		return &DefaultModifiedTimestamp, nil
+	}
+
+	sde, err := strconv.ParseInt(sourceDateEpoch, 10, 64)
+	if err != nil {
+		return nil, fmt.Errorf("invalid SOURCE_DATE_EPOCH: %s", err)
+	}
+	unixDate := time.Unix(sde, 0).UTC()
+	return &unixDate, nil
+}
+
 // Parse the configuration from cli args
 func (conf *Configuration) Parse() error {
 	conf.defineFlags()
@@ -135,7 +158,20 @@ func (conf *Configuration) Parse() error {
 		return ErrAbort
 	}
 
+	modifiedDate, err := conf.parseModifiedDate()
+	if err != nil {
+		return err
+	}
+	conf.modifiedDate = *modifiedDate
+
 	return conf.parseVarargs()
+}
+
+func (conf *Configuration) ModifiedDate() time.Time {
+	if conf.modifiedDate.IsZero() {
+		return DefaultModifiedTimestamp
+	}
+	return conf.modifiedDate
 }
 
 // NewConfiguration creates a new configuration

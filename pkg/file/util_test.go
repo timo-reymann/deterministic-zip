@@ -2,6 +2,7 @@ package file
 
 import (
 	"reflect"
+	"strconv"
 	"testing"
 )
 
@@ -20,10 +21,12 @@ func TestIsDir(t *testing.T) {
 		},
 	}
 
-	for _, tc := range testCases {
-		if isDir, _ := IsDir(tc.path); isDir != tc.result {
-			t.Fatalf("Expected result to be %v but got %v", tc.result, isDir)
-		}
+	for idx, tc := range testCases {
+		t.Run(strconv.Itoa(idx), func(t *testing.T) {
+			if isDir, _ := IsDir(tc.path); isDir != tc.result {
+				t.Fatalf("Expected result to be %v but got %v", tc.result, isDir)
+			}
+		})
 	}
 }
 
@@ -44,10 +47,12 @@ func TestReadDirRecursive(t *testing.T) {
 		},
 	}
 
-	for _, tc := range testCases {
-		results, _ := ReadDirRecursive(tc.path)
-		if !reflect.DeepEqual(results, tc.results) {
-			t.Fatalf("Expected %v, but got %v", tc.results, results)
-		}
+	for idx, tc := range testCases {
+		t.Run(strconv.Itoa(idx), func(t *testing.T) {
+			results, _ := ReadDirRecursive(tc.path)
+			if !reflect.DeepEqual(results, tc.results) {
+				t.Fatalf("Expected %v, but got %v", tc.results, results)
+			}
+		})
 	}
 }

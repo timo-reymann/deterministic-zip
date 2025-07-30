@@ -4,6 +4,7 @@ import (
 	"errors"
 	"github.com/timo-reymann/deterministic-zip/pkg/cli"
 	"reflect"
+	"strconv"
 	"testing"
 )
 
@@ -72,25 +73,28 @@ func TestRecursive_Execute(t *testing.T) {
 		},
 	}
 
-	for _, tc := range testCases {
-		c := cli.Configuration{
-			SourceFiles: tc.sources,
-		}
-		err := recursive.Execute(&c)
-		if tc.err == nil && err != nil {
-			t.Fatalf("Expected no error but got %v", err)
-		} else if err != nil {
-			if (*tc.err).Error() != err.Error() {
-				t.Fatalf("Expected error %v, but got %v", *tc.err, err)
-			} else {
-				// Skip checking -> error thrown
-				continue
+	for idx, tc := range testCases {
+		t.Run(strconv.Itoa(idx), func(t *testing.T) {
+			c := cli.Configuration{
+				SourceFiles: tc.sources,
 			}
-		}
+			err := recursive.Execute(&c)
+			if tc.err == nil && err != nil {
+				t.Fatalf("Expected no error but got %v", err)
+			} else if err != nil {
+				if (*tc.err).Error() != err.Error() {
+					t.Fatalf("Expected error %v, but got %v", *tc.err, err)
+				} else {
+					// Skip checking -> error thrown
+					return
+				}
+			}
 
-		if !reflect.DeepEqual(tc.sourcesAfter, c.SourceFiles) {
-			t.Fatalf("Expected %v, but got %v", tc.sourcesAfter, c.SourceFiles)
-		}
+			if !reflect.DeepEqual(tc.sourcesAfter, c.SourceFiles) {
+				t.Fatalf("Expected %v, but got %v", tc.sourcesAfter, c.SourceFiles)
+			}
+		})
+
 	}
 
 }

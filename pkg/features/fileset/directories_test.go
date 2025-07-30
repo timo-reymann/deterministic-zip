@@ -4,6 +4,7 @@ import (
 	"github.com/timo-reymann/deterministic-zip/pkg/cli"
 	"reflect"
 	"sort"
+	"strconv"
 	"testing"
 )
 
@@ -69,28 +70,31 @@ func TestDirectories_Execute(t *testing.T) {
 		},
 	}
 
-	for _, tc := range testCases {
-		c := cli.Configuration{
-			Directories: true,
-			SourceFiles: tc.sources,
-		}
-		err := directories.Execute(&c)
-		if tc.err == nil && err != nil {
-			t.Fatalf("Expected no error but got %v", err)
-		} else if err != nil {
-			if (*tc.err).Error() != err.Error() {
-				t.Fatalf("Expected error %v, but got %v", *tc.err, err)
-			} else {
-				// Skip checking -> error thrown
-				continue
+	for idx, tc := range testCases {
+		t.Run(strconv.Itoa(idx), func(t *testing.T) {
+			c := cli.Configuration{
+				Directories: true,
+				SourceFiles: tc.sources,
 			}
-		}
+			err := directories.Execute(&c)
+			if tc.err == nil && err != nil {
+				t.Fatalf("Expected no error but got %v", err)
+			} else if err != nil {
+				if (*tc.err).Error() != err.Error() {
+					t.Fatalf("Expected error %v, but got %v", *tc.err, err)
+				} else {
+					// Skip checking -> error thrown
+					return
+				}
+			}
 
-		// Sort before test
-		sort.Strings(c.SourceFiles)
-		if !reflect.DeepEqual(tc.sourcesAfter, c.SourceFiles) {
-			t.Fatalf("Expected %v, but got %v", tc.sourcesAfter, c.SourceFiles)
-		}
+			// Sort before test
+			sort.Strings(c.SourceFiles)
+			if !reflect.DeepEqual(tc.sourcesAfter, c.SourceFiles) {
+				t.Fatalf("Expected %v, but got %v", tc.sourcesAfter, c.SourceFiles)
+			}
+		})
+
 	}
 
 }

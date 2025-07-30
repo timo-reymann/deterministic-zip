@@ -1,6 +1,7 @@
 package file
 
 import (
+	"strconv"
 	"testing"
 )
 
@@ -117,12 +118,15 @@ func TestFindInString(t *testing.T) {
 		},
 	}
 
-	for _, tc := range testCases {
-		result := NewGlob(tc.pattern).Match(tc.path)
+	for idx, tc := range testCases {
+		t.Run(strconv.Itoa(idx), func(t *testing.T) {
+			result := NewGlob(tc.pattern).Match(tc.path)
 
-		if tc.result != result {
-			t.Fatalf("Expected %v, but got %v for pattern %s and input %s", tc.result, result, tc.pattern, tc.path)
-		}
+			if tc.result != result {
+				t.Fatalf("Expected %v, but got %v for pattern %s and input %s", tc.result, result, tc.pattern, tc.path)
+			}
+		})
+
 	}
 }
 

@@ -3,6 +3,7 @@ package fileset
 import (
 	"github.com/timo-reymann/deterministic-zip/pkg/cli"
 	"reflect"
+	"strconv"
 	"testing"
 )
 
@@ -65,18 +66,21 @@ func TestIgnoreTargetZip_Execute(t *testing.T) {
 		},
 	}
 
-	for _, tc := range testCases {
-		c := cli.Configuration{
-			ZipFile:     tc.zipFile,
-			SourceFiles: tc.sources,
-		}
-		err := ignoreZip.Execute(&c)
-		if err != nil {
-			t.Fatal(err)
-		}
+	for idx, tc := range testCases {
+		t.Run(strconv.Itoa(idx), func(t *testing.T) {
+			c := cli.Configuration{
+				ZipFile:     tc.zipFile,
+				SourceFiles: tc.sources,
+			}
+			err := ignoreZip.Execute(&c)
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		if !reflect.DeepEqual(tc.sourcesAfter, c.SourceFiles) {
-			t.Fatalf("Expected %v, but got %v", tc.sourcesAfter, c.SourceFiles)
-		}
+			if !reflect.DeepEqual(tc.sourcesAfter, c.SourceFiles) {
+				t.Fatalf("Expected %v, but got %v", tc.sourcesAfter, c.SourceFiles)
+			}
+		})
+
 	}
 }

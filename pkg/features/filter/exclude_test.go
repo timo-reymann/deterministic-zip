@@ -3,6 +3,7 @@ package filter
 import (
 	"github.com/timo-reymann/deterministic-zip/pkg/cli"
 	"reflect"
+	"strconv"
 	"testing"
 )
 
@@ -69,24 +70,25 @@ func TestExclude_Execute(t *testing.T) {
 		},
 	}
 
-	for _, tc := range testCases {
-		config := cli.Configuration{
-			SourceFiles: tc.sourceFiles,
-			Exclude:     tc.patterns,
-		}
-		exclude := Exclude{}
-		if err := exclude.Execute(&config); err != nil {
-			t.Fatal(err)
-		}
+	for idx, tc := range testCases {
+		t.Run(strconv.Itoa(idx), func(t *testing.T) {
+			config := cli.Configuration{
+				SourceFiles: tc.sourceFiles,
+				Exclude:     tc.patterns,
+			}
+			exclude := Exclude{}
+			if err := exclude.Execute(&config); err != nil {
+				t.Fatal(err)
+			}
 
-		// DeepEquals doesnt like empty arrays
-		if len(tc.targetFiles) == 0 && len(config.SourceFiles) == 0 {
-			continue
-		}
+			// DeepEquals doesnt like empty arrays
+			if len(tc.targetFiles) == 0 && len(config.SourceFiles) == 0 {
+				return
+			}
 
-		if !reflect.DeepEqual(tc.targetFiles, config.SourceFiles) {
-			t.Fatalf("Expected %v, but got %v for patterns %v", tc.targetFiles, config.SourceFiles, tc.patterns)
-		}
+			if !reflect.DeepEqual(tc.targetFiles, config.SourceFiles) {
+				t.Fatalf("Expected %v, but got %v for patterns %v", tc.targetFiles, config.SourceFiles, tc.patterns)
+			}
+		})
 	}
-
 }

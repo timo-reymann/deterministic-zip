@@ -214,63 +214,66 @@ func TestCreate(t *testing.T) {
 	}
 
 	for _, tc := range testCases {
-		rand.Shuffle(len(tc.config.SourceFiles), func(i, j int) {
-			tc.config.SourceFiles[i], tc.config.SourceFiles[j] = tc.config.SourceFiles[j], tc.config.SourceFiles[i]
-		})
-		for i := 0; i < 20; i++ {
-			tempFile := createTmpFile()
-			tempFileZip := tempFile + extension
-			// Create tempfile
-			tc.config.ZipFile = tempFile
+		t.Run(tc.sha256, func(t *testing.T) {
+			rand.Shuffle(len(tc.config.SourceFiles), func(i, j int) {
+				tc.config.SourceFiles[i], tc.config.SourceFiles[j] = tc.config.SourceFiles[j], tc.config.SourceFiles[i]
+			})
+			for i := 0; i < 20; i++ {
+				tempFile := createTmpFile()
+				tempFileZip := tempFile + extension
+				// Create tempfile
+				tc.config.ZipFile = tempFile
 
-			_ = Create(&tc.config, tc.compression)
+				_ = Create(&tc.config, tc.compression)
 
-			sha256sum := checksum(tc.config.ZipFile)
+				sha256sum := checksum(tc.config.ZipFile)
 
-			if tc.sha256 != sha256sum {
-				t.Fatalf("Run #%d Expected checksum %s, but got %s, file: %s", i, tc.sha256, sha256sum, tc.config.ZipFile)
-			}
+				if tc.sha256 != sha256sum {
+					t.Fatalf("Run #%d Expected checksum %s, but got %s, file: %s", i, tc.sha256, sha256sum, tc.config.ZipFile)
+				}
 
-			if tc.config.ZipFile != tempFileZip {
-				t.Fatalf("Expected final zip name to be overridden")
-			}
+				if tc.config.ZipFile != tempFileZip {
+					t.Fatalf("Expected final zip name to be overridden")
+				}
 
-			r, err := zip.OpenReader(tempFileZip)
-			if err != nil {
-				t.Fatal(err)
-			}
+				r, err := zip.OpenReader(tempFileZip)
+				if err != nil {
+					t.Fatal(err)
+				}
 
-			var foundFile *zip.File = nil
+				var foundFile *zip.File = nil
 
-			if len(tc.zipFiles) == 0 && len(tc.zipFiles) != 0 {
-				t.Fatalf("Expected no files in zip, but got %v", tc.zipFiles)
-			}
+				if len(tc.zipFiles) == 0 && len(tc.zipFiles) != 0 {
+					t.Fatalf("Expected no files in zip, but got %v", tc.zipFiles)
+				}
 
-			for _, expectedFile := range tc.zipFiles {
-				foundFile = nil
-				for _, file := range r.File {
-					if expectedFile.name == file.Name {
-						foundFile = file
-						break
+				for _, expectedFile := range tc.zipFiles {
+					foundFile = nil
+					for _, file := range r.File {
+						if expectedFile.name == file.Name {
+							foundFile = file
+							break
+						}
+					}
+
+					if foundFile == nil {
+						t.Fatalf("Expected file %s to be in archive", expectedFile.name)
+					}
+
+					if foundFile.Modified.Sub(ModifiedTimestamp) != 0 {
+						t.Fatalf("Modified timestamp not reset for file %s", expectedFile.name)
+					}
+
+					if (foundFile.FileHeader.Mode() == os.ModeDir) != expectedFile.isDir {
+						t.Fatalf("Expected file %s to be directory == %v", expectedFile.name, expectedFile.isDir)
 					}
 				}
 
-				if foundFile == nil {
-					t.Fatalf("Expected file %s to be in archive", expectedFile.name)
-				}
-
-				if foundFile.Modified.Sub(ModifiedTimestamp) != 0 {
-					t.Fatalf("Modified timestamp not reset for file %s", expectedFile.name)
-				}
-
-				if (foundFile.FileHeader.Mode() == os.ModeDir) != expectedFile.isDir {
-					t.Fatalf("Expected file %s to be directory == %v", expectedFile.name, expectedFile.isDir)
-				}
+				_ = r.Close()
+				_ = os.Remove(tempFileZip)
 			}
+		})
 
-			_ = r.Close()
-			_ = os.Remove(tempFileZip)
-		}
 	}
 }
 

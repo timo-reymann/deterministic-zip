@@ -3,6 +3,7 @@ package fileset
 import (
 	"github.com/timo-reymann/deterministic-zip/pkg/cli"
 	"reflect"
+	"strconv"
 	"testing"
 )
 
@@ -58,17 +59,20 @@ func TestIgnoreNonExistent_Execute(t *testing.T) {
 		},
 	}
 
-	for _, tc := range testCases {
-		c := cli.Configuration{
-			SourceFiles: tc.sources,
-		}
-		err := ignoreNonExistent.Execute(&c)
-		if err != nil {
-			t.Fatal(err)
-		}
+	for idx, tc := range testCases {
+		t.Run(strconv.Itoa(idx), func(t *testing.T) {
+			c := cli.Configuration{
+				SourceFiles: tc.sources,
+			}
+			err := ignoreNonExistent.Execute(&c)
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		if !reflect.DeepEqual(tc.sourcesAfter, c.SourceFiles) {
-			t.Fatalf("Expected %v, but got %v", tc.sourcesAfter, c.SourceFiles)
-		}
+			if !reflect.DeepEqual(tc.sourcesAfter, c.SourceFiles) {
+				t.Fatalf("Expected %v, but got %v", tc.sourcesAfter, c.SourceFiles)
+			}
+		})
+
 	}
 }

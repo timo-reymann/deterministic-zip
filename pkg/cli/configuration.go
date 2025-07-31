@@ -90,7 +90,7 @@ func (conf *Configuration) defineFlags() {
 }
 
 func (conf *Configuration) parseVarargs() error {
-	remaining := flag.Args()
+	remaining := conf.flagSet.Args()
 	if len(remaining) < 2 {
 		return ErrMinimalParamsMissing
 	}

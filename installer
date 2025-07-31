@@ -15,7 +15,7 @@ _ok() {
     SYS_ENV_PLATFORM=linux_arm
   else
     echo "This installer does not currently support your platform. If you believe it should, please consider opening an issue on the GitHub repository:"
-    echo "https://github.com/timo-reymann/circleci-orb-deterministic-zip/issues/new"
+    echo "https://github.com/timo-reymann/deterministic-zip/issues/new"
     exit 1
   fi
 
@@ -28,9 +28,16 @@ _ok() {
     _ok
   fi
 
-  echo -n "Fetch the latest version from GitHub ... "
-  # shellcheck disable=SC1083
-  latest_version="$(curl -Lso /dev/null -w %{url_effective} https://github.com/timo-reymann/deterministic-zip/releases/latest | grep -o '[^/]*$')"
+  if [ -n "$DETERMINISTIC_ZIP_VERSION" ];
+  then
+    echo -n "Using version from DETERMINISTIC_ZIP_VERSION ..."
+    version="$DETERMINISTIC_ZIP_VERSION"
+  else
+      echo -n "Fetch the latest version from GitHub ... "
+      # shellcheck disable=SC1083
+      version="$(curl -Lso /dev/null -w %{url_effective} https://github.com/timo-reymann/deterministic-zip/releases/latest | grep -o '[^/]*$')"
+  fi
+
   _ok
 
   echo -n "Determine artifact to download based on host OS ... "
@@ -48,8 +55,8 @@ _ok() {
   esac
   _ok
 
-  echo -n "Download binary for ${latest_version} ... "
-  curl -LsS https://github.com/timo-reymann/deterministic-zip/releases/download/${latest_version}/${artifact} -o /tmp/deterministic-zip.${_pid}
+  echo -n "Download binary for ${version} ... "
+  curl --fail -LsS https://github.com/timo-reymann/deterministic-zip/releases/download/${version}/${artifact} -o /tmp/deterministic-zip.${_pid} || { echo -e "\n\033[0;31mERR: Failed to download from https://github.com/timo-reymann/deterministic-zip/releases/download/${version}/${artifact}\033[0m" && exit 2; }
   _ok
 
   echo -n "Installing to /usr/local/bin ..."

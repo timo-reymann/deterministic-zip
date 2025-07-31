@@ -34,6 +34,8 @@ deterministic-zip
 bash <(curl -sS https://raw.githubusercontent.com/timo-reymann/deterministic-zip/main/installer)
 ```
 
+> Set the environment variable `DETERMINISTIC_ZIP_VERSION` to install a specific version
+
 ### Manual
 
 #### Linux (64-bit)

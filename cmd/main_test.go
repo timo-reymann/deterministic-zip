@@ -6,6 +6,7 @@ import (
 	"github.com/timo-reymann/deterministic-zip/pkg/cli"
 	"log"
 	"os"
+	"path/filepath"
 	"testing"
 )
 
@@ -129,17 +130,30 @@ func TestExecute_SmokeTest(t *testing.T) {
 		panic("os.Exit called")
 	}
 
+	archiveName := filepath.Join(t.TempDir(), "out.zip")
+
 	// Test cases
 	tests := []struct {
 		name        string
 		args        []string
 		shouldExit  bool
 		expectPanic bool
+		verify      func(t *testing.T)
 	}{
 		{
 			name:       "version flag should exit cleanly",
 			args:       []string{"program", "--version"},
 			shouldExit: true,
+		},
+		{
+			name:       "zip file should be created",
+			args:       []string{"program", archiveName, "test_data/foo"},
+			shouldExit: false,
+			verify: func(t *testing.T) {
+				if _, err := os.Stat(archiveName); err != nil {
+					t.Error(err)
+				}
+			},
 		},
 	}
 
@@ -197,6 +211,10 @@ func TestExecute_SmokeTest(t *testing.T) {
 				os.Stdout = stdoutWriter
 				os.Stderr = stderrWriter
 			}
+
+			if tt.verify != nil {
+				tt.verify(t)
+			}
 		})
 	}
 }
@@ -240,20 +258,16 @@ func TestExecute_WithValidMinimalArgs(t *testing.T) {
 		outputFile,
 	}
 
-	// Run Execute
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				// If it panics due to missing dependencies or configuration issues,
-				// that's okay for a smoke test - we just want to verify it doesn't
-				// crash unexpectedly
-				t.Logf("Execute panicked (expected in smoke test): %v", r)
-			}
-		}()
-
-		Execute()
+	defer func() {
+		if r := recover(); r != nil {
+			// If it panics due to missing dependencies or configuration issues,
+			// that's okay for a smoke test - we just want to verify it doesn't
+			// crash unexpectedly
+			t.Logf("Execute panicked (expected in smoke test): %v", r)
+		}
 	}()
 
+	Execute()
 	// If we got here without panicking, that's good
 	// Check if output file was created (best case scenario)
 	if _, err := os.Stat(outputFile); err == nil {

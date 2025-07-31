@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"errors"
 	"github.com/timo-reymann/deterministic-zip/pkg/cli"
 	"github.com/timo-reymann/deterministic-zip/pkg/features"
 	"github.com/timo-reymann/deterministic-zip/pkg/output"
@@ -13,11 +14,11 @@ import (
 var osExit = os.Exit
 
 func errCheck(err error, c *cli.Configuration) {
-	if err == cli.ErrAbort {
+	if errors.Is(err, cli.ErrAbort) {
 		osExit(0)
 	}
 
-	if err == cli.ErrMinimalParamsMissing {
+	if errors.Is(err, cli.ErrMinimalParamsMissing) {
 		c.Help()
 		osExit(2)
 	}

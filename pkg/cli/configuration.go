@@ -57,6 +57,9 @@ type Configuration struct {
 	modifiedDate time.Time
 
 	flagSet *flag.FlagSet
+
+	isVersionCMD bool
+	isHelpCMD    bool
 }
 
 func (conf *Configuration) addBoolFlag(field *bool, long string, short string, val bool, usage string) {
@@ -86,6 +89,8 @@ func (conf *Configuration) defineFlags() {
 	conf.addStringFlag(&conf.CompressionMethod, "compression-method", "Z", "deflate", "Set the default compression method. \nCurrently the main methods supported by zip are store and deflate. \nCompression method can be set to:\n\nstore       Setting the compression method to store forces to store entries with no compression. \n            This is generally faster than compressing entries, but results in no space savings.\n\ndeflate     This is the default method for zip. If zip determines that storing is better than deflation, the entry will be stored instead.\n")
 	conf.addStringFlag(&conf.LogFilePath, "logfile-path", "", "", "Open a logfile at the given path.\nBy default any existing file at that location is overwritten, but the --log-append option will result in an existing file being opened and the new log information appended to any existing information.")
 	conf.addBoolFlag(&conf.LogFileAppend, "log-append", "", false, "Append to existing logfile. Default is to overwrite.")
+	conf.addBoolFlag(&conf.isVersionCMD, "version", "", false, "Show version info")
+	conf.addBoolFlag(&conf.isHelpCMD, "Help", "h", false, "Show available commands")
 }
 
 func (conf *Configuration) parseVarargs() error {
@@ -144,16 +149,12 @@ func (conf *Configuration) parseModifiedDate() (*time.Time, error) {
 
 // Parse the configuration from cli args
 func (conf *Configuration) Parse() error {
-	conf.defineFlags()
-
-	isVersion := conf.flagSet.Bool("version", false, "Show version info")
-	isHelp := conf.flagSet.BoolP("Help", "h", false, "Show available commands")
 	err := conf.flagSet.Parse(os.Args[1:])
 
-	if errors.Is(err, flag.ErrHelp) || (isHelp != nil && *isHelp) {
+	if errors.Is(err, flag.ErrHelp) || conf.isHelpCMD {
 		conf.Help()
 		return ErrAbort
-	} else if *isVersion {
+	} else if conf.isVersionCMD {
 		PrintVersionInfo()
 		return ErrAbort
 	}
@@ -176,5 +177,7 @@ func (conf *Configuration) ModifiedDate() time.Time {
 
 // NewConfiguration creates a new configuration
 func NewConfiguration() *Configuration {
-	return &Configuration{}
+	c := &Configuration{}
+	c.defineFlags()
+	return c
 }

@@ -146,6 +146,16 @@ func TestExecute_SmokeTest(t *testing.T) {
 			shouldExit: true,
 		},
 		{
+			name:       "help shorthand flag should exit cleanly",
+			args:       []string{"program", "-h"},
+			shouldExit: true,
+		},
+		{
+			name:       "help long flag should exit cleanly",
+			args:       []string{"program", "--help"},
+			shouldExit: true,
+		},
+		{
 			name:       "zip file should be created",
 			args:       []string{"program", archiveName, "test_data/foo"},
 			shouldExit: false,

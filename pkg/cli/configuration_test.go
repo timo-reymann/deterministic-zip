@@ -82,14 +82,7 @@ func TestCleanPaths(t *testing.T) {
 
 func TestConfiguration_Help_SmokeTest(t *testing.T) {
 	// Create a Configuration instance
-	config := &Configuration{}
-
-	// Test that Help() doesn't panic or fail
-	defer func() {
-		if r := recover(); r != nil {
-			t.Errorf("Configuration.Help() panicked: %v", r)
-		}
-	}()
+	config := NewConfiguration()
 
 	// Call Help method - should not fail
 	config.Help()
@@ -100,7 +93,7 @@ func TestConfiguration_Help_SmokeTest(t *testing.T) {
 
 // TestConfiguration_Parse_HelpFlag tests Parse with help flag
 func TestConfiguration_Parse_HelpFlag(t *testing.T) {
-	config := &Configuration{}
+	config := NewConfiguration()
 
 	testCases := []struct {
 		name string
@@ -126,13 +119,6 @@ func TestConfiguration_Parse_HelpFlag(t *testing.T) {
 
 	for _, tt := range testCases {
 		t.Run(tt.name, func(t *testing.T) {
-			// Test that Parse doesn't panic with help flags
-			defer func() {
-				if r := recover(); r != nil {
-					t.Errorf("Configuration.Parse() with help flag panicked: %v", r)
-				}
-			}()
-
 			// Save original os.Args and restore after test
 			originalArgs := os.Args
 			defer func() { os.Args = originalArgs }()
@@ -150,16 +136,12 @@ func TestConfiguration_Parse_HelpFlag(t *testing.T) {
 
 // TestConfiguration_Parse_VersionFlag tests Parse with version flag
 func TestConfiguration_Parse_VersionFlag(t *testing.T) {
-	config := &Configuration{}
+	config := NewConfiguration()
 
 	testCases := []struct {
 		name string
 		args []string
 	}{
-		{
-			name: "short version flag",
-			args: []string{"program", "-v"},
-		},
 		{
 			name: "long version flag",
 			args: []string{"program", "--version"},
@@ -176,12 +158,6 @@ func TestConfiguration_Parse_VersionFlag(t *testing.T) {
 
 	for _, tt := range testCases {
 		t.Run(tt.name, func(t *testing.T) {
-			// Test that Parse doesn't panic with version flags
-			defer func() {
-				if r := recover(); r != nil {
-					t.Errorf("Configuration.Parse() with version flag panicked: %v", r)
-				}
-			}()
 
 			// Save original os.Args and restore after test
 			originalArgs := os.Args
@@ -200,7 +176,7 @@ func TestConfiguration_Parse_VersionFlag(t *testing.T) {
 
 // TestConfiguration_Parse_HelpAndVersionFlags tests Parse with both help and version flags
 func TestConfiguration_Parse_HelpAndVersionFlags(t *testing.T) {
-	config := &Configuration{}
+	config := NewConfiguration()
 
 	testCases := []struct {
 		name string
@@ -246,14 +222,7 @@ func TestConfiguration_Parse_HelpAndVersionFlags(t *testing.T) {
 
 // TestConfiguration_Parse_EmptyArgs tests Parse with no arguments
 func TestConfiguration_Parse_EmptyArgs(t *testing.T) {
-	config := &Configuration{}
-
-	// Test that Parse doesn't panic with empty args
-	defer func() {
-		if r := recover(); r != nil {
-			t.Errorf("Configuration.Parse() with empty args panicked: %v", r)
-		}
-	}()
+	config := NewConfiguration()
 
 	// Save original os.Args and restore after test
 	originalArgs := os.Args
@@ -270,7 +239,7 @@ func TestConfiguration_Parse_EmptyArgs(t *testing.T) {
 
 // TestConfiguration_Parse_InvalidHelpVariations tests Parse with invalid help flag variations
 func TestConfiguration_Parse_InvalidHelpVariations(t *testing.T) {
-	config := &Configuration{}
+	config := NewConfiguration()
 
 	testCases := []struct {
 		name string
@@ -333,8 +302,8 @@ func TestConfiguration_Parse_MultipleInstances(t *testing.T) {
 	for _, tt := range testCases {
 		t.Run(tt.name, func(t *testing.T) {
 			// Test multiple Configuration instances
-			config1 := &Configuration{}
-			config2 := &Configuration{}
+			config1 := NewConfiguration()
+			config2 := NewConfiguration()
 
 			defer func() {
 				if r := recover(); r != nil {

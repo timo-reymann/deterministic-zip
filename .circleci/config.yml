@@ -18,7 +18,7 @@ executors:
       - image: cimg/go:1.24
   python:
     docker:
-      - image: cimg/python:3.12
+      - image: cimg/python:3.14
 
 
 jobs:

@@ -13,7 +13,7 @@ FROM alpine
 LABEL org.opencontainers.image.title="deterministic-zip"
 LABEL org.opencontainers.image.description="Simple (almost drop-in) replacement for zip that produces deterministic files."
 LABEL org.opencontainers.image.ref.name="master"
-LABEL org.opencontainers.image.licenses='"Climate Strike" License Version 1.0 (Draft)'
+LABEL org.opencontainers.image.licenses='GPLv3'
 LABEL org.opencontainers.image.vendor="Timo Reymann <mail@timo-reymann.de>"
 LABEL org.opencontainers.image.authors="Timo Reymann <mail@timo-reymann.de>"
 LABEL org.opencontainers.image.url="https://github.com/timo-reymann/deterministic-zip"

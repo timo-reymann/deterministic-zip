@@ -10,7 +10,8 @@ RUN if [[ "$(arch)" == "x86_64" ]]; then \
     chown 1000:1000 /bin/deterministic-zip
 
 FROM alpine
-LABEL org.opencontainers.image.title="deterministic-zip"
+LABEL 
+LABEL org.opencontainers.image.licenses="gpl-3.0"org.opencontainers.image.title="deterministic-zip"
 LABEL org.opencontainers.image.description="Simple (almost drop-in) replacement for zip that produces deterministic files."
 LABEL org.opencontainers.image.ref.name="master"
 LABEL org.opencontainers.image.licenses='"Climate Strike" License Version 1.0 (Draft)'

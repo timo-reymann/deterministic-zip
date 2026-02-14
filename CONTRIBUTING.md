@@ -45,7 +45,7 @@ To make your life easier there is also a handy template available so feel free t
 > ATTENTION: If you DONT provide steps to reproduce the ticket will be closed WITHOUT FURTHER NOTICE!
 
 ## License
-By contributing, you agree that your contributions will be licensed under its "Climate Strike" License Version 1.0 (Draft).
+By contributing, you agree that your contributions will be licensed under its GPL-3.0 license.
 
 
 

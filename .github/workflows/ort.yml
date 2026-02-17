@@ -48,12 +48,12 @@ jobs:
              $HOME/$ORT_HOME_PATH/cache
            key: ort-deps-cache
 
-       - name: Cache ORT scan results
-         id: cache-scan-results
+       - name: Cache ORT
+         id: cache-ort
          uses: actions/cache@v4
          with:
-           path: '~/ort/scanner/'
-           key: ort-scan-results-cache
+           path: '~/.ort'
+           key: ort-cache
 
        - name: Prepare directories
          run: |

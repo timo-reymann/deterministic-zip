@@ -61,16 +61,16 @@ jobs:
 
        - name: Analyze
          run: |
-           ort analyze -i . -o ort/analyze
+           ort -c .ort/config.yml analyze -i . -o ort/analyze
 
        - name: Scan
          run: |
-           ort scan -i ort/analyze/analyzer-result.yml -o ort/scanner
+           ort -c .ort/config.yml scan -i ort/analyze/analyzer-result.yml -o ort/scanner
 
        - name: Evaluate
          id: evaluate
          run: |
-           ort evaluate \
+           ort -c .ort/config.yml evaluate \
              --rules-file .ort/evaluator.rules.kts \
              --license-classifications-file .ort/license-classifications.yml \
              -i ort/scanner/scan-result.yml \
@@ -79,7 +79,7 @@ jobs:
        - name: Report
          if: always() && steps.evaluate.outcome != 'skipped'
          run: |
-           ort report \
+           ort -c .ort/config.yml report \
              -i ort/evaluation/evaluation-result.yml \
              -o ort/report \
              --report-formats PlainTextTemplate,StaticHtml,WebApp

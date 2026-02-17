@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2019 The ORT Project Copyright Holders <https://github.com/oss-review-toolkit/ort/blob/main/NOTICE>
+ * Copyright (C) 2026 Timo Reymann
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,25 +18,23 @@
  * License-Filename: LICENSE
  */
 
-/*******************************************************
- * Example OSS Review Toolkit (ORT) .rules.kts file    *
- *                                                     *
- * Note this file only contains example how to write   *
- * rules. It's recommended you consult your own legal  *
- * when writing your own rules.                        *
- *******************************************************/
 
 /**
  * Import the license classifications from license-classifications.yml.
  */
-
 val permissiveLicenses = licenseClassifications.licensesByCategory["permissive"].orEmpty()
-
 val copyleftLicenses = licenseClassifications.licensesByCategory["copyleft"].orEmpty()
-
 val copyleftLimitedLicenses = licenseClassifications.licensesByCategory["copyleft-limited"].orEmpty()
-
 val publicDomainLicenses = licenseClassifications.licensesByCategory["public-domain"].orEmpty()
+
+val LicensePresets = mapOf(
+    "Apache-2.0" to permissiveLicenses + copyleftLimitedLicenses + publicDomainLicenses + setOf("Unlicense"),
+    "MIT" to permissiveLicenses + copyleftLicenses + copyleftLimitedLicenses + publicDomainLicenses + setOf("Unlicense"),
+    "GPL-3.0" to setOf("GPL-3.0", "LGPL-3.0", "GPL-2.0", "AGPL-3.0") + permissiveLicenses + publicDomainLicenses + setOf("Unlicense"),
+    "Unlicense" to permissiveLicenses + copyleftLimitedLicenses + publicDomainLicenses + setOf("Unlicense")
+)
+
+val defaultAllowedLicenses = permissiveLicenses + copyleftLimitedLicenses + publicDomainLicenses + setOf("Unlicense")
 
 // The complete set of licenses covered by policy rules.
 val handledLicenses = listOf(
@@ -338,7 +337,7 @@ fun RuleSet.wrongLicenseInLicenseFileRule() = projectSourceRule("WRONG_LICENSE_I
         +projectSourceHasFile("LICENSE")
     }
 
-    val allowedRootLicenses = setOf("Apackage-2.0", "MIT", "GPL-3.0", "Unlicense")
+    val allowedRootLicenses = setOf("Apache-2.0", "MIT", "GPL-3.0", "Unlicense")
     val detectedRootLicenses = projectSourceGetDetectedLicensesByFilePath("LICENSE").values.flatten().toSet()
     val wrongLicenses = detectedRootLicenses - allowedRootLicenses
 
@@ -355,27 +354,53 @@ fun RuleSet.wrongLicenseInLicenseFileRule() = projectSourceRule("WRONG_LICENSE_I
     }
 }
 
+fun RuleSet.licenseCompatibilityRule() = packageRule("LICENSE_COMPATIBILITY") {
+    require { -isExcluded() }
+
+    val allowedRootLicenses = setOf("Apache-2.0", "MIT", "GPL-3.0", "Unlicense")
+    val detectedRootLicenses = projectSourceGetDetectedLicensesByFilePath("LICENSE").values.flatten().toSet()
+    val rootLicense = detectedRootLicenses.firstOrNull() ?: "Apache-2.0" // Default to Apache-2.0
+
+    val allowedLicenses = when (rootLicense) {
+        "Apache-2.0" -> LicensePresets["Apache-2.0"]!!
+        "MIT"        -> LicensePresets["MIT"]!!
+        "GPL-3.0"    -> LicensePresets["GPL-3.0"]!!
+        "Unlicense"  -> LicensePresets["Unlicense"]!!
+        else         -> defaultAllowedLicenses
+    }
+
+    licenseRule("LICENSE_COMPATIBILITY", LicenseView.CONCLUDED_OR_DECLARED_AND_DETECTED) {
+        require {
+            -isExcluded()
+            license !in allowedLicenses
+        }
+
+        error(
+            "The license '$license' is incompatible with the project's root license '$rootLicense'. " +
+            "Allowed licenses: ${allowedLicenses.joinToString()}.",
+            howToFixDefault()
+        )
+    }
+}
+
+
 /**
  * The set of policy rules.
  */
 val ruleSet = ruleSet(ortResult, licenseInfoResolver, resolutionProvider) {
-    // Rules which get executed for each package:
     unhandledLicenseRule()
     unmappedDeclaredLicenseRule()
     copyleftInSourceRule()
     copyleftInSourceLimitedRule()
     vulnerabilityInPackageRule()
     highSeverityVulnerabilityInPackageRule()
-
-    // Rules which get executed once:
     deprecatedScopeExcludeReasonInOrtYmlRule()
-
-    // Prior to open sourcing use case rules (which get executed once):
     dependencyInProjectSourceRule()
     missingCiConfigurationRule()
     missingContributingFileRule()
     missingReadmeFileRule()
     wrongLicenseInLicenseFileRule()
+    licenseCompatibilityRule()
 }
 
 // Populate the list of policy rule violations to return.

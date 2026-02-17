@@ -82,7 +82,7 @@ jobs:
            ort -c .ort/config.yml report \
              -i ort/evaluation/evaluation-result.yml \
              -o ort/report \
-             --report-formats PlainTextTemplate,StaticHtml,WebApp
+             --report-formats PlainTextTemplate,StaticHtml,WebApp,PdfTemplate
 
        - name: Upload reports
          if: always() && steps.evaluate.outcome != 'skipped'

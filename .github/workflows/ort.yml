@@ -107,12 +107,21 @@ jobs:
           if [ ! -f NOTICE ]; then
             echo "outdated=true" >> "$GITHUB_OUTPUT"
             echo "reason=NOTICE file does not exist in the repository" >> "$GITHUB_OUTPUT"
+            DIFF_OUTPUT=$(head -100 ort/report/NOTICE_DEFAULT)
           elif ! diff -q NOTICE ort/report/NOTICE_DEFAULT > /dev/null 2>&1; then
             echo "outdated=true" >> "$GITHUB_OUTPUT"
             echo "reason=NOTICE file differs from generated NOTICE_DEFAULT" >> "$GITHUB_OUTPUT"
+            DIFF_OUTPUT=$(diff -u NOTICE ort/report/NOTICE_DEFAULT | head -100)
           else
             echo "outdated=false" >> "$GITHUB_OUTPUT"
+            DIFF_OUTPUT=""
           fi
+
+          {
+            echo "diff<<NOTICE_DIFF_EOF"
+            echo "$DIFF_OUTPUT"
+            echo "NOTICE_DIFF_EOF"
+          } >> "$GITHUB_OUTPUT"
 
       - name: Upload HTML report
         id: upload-html
@@ -186,11 +195,25 @@ jobs:
             ];
 
             if (noticeOutdated) {
+              const noticeDiff = `${{ steps.notice-check.outputs.diff }}`;
               sections.push(
                 '',
                 '### :warning: NOTICE file out of date',
                 `${noticeReason}. Please update the \`NOTICE\` file with the contents of the generated \`NOTICE_DEFAULT\`.`,
               );
+              if (noticeDiff) {
+                sections.push(
+                  '',
+                  '<details>',
+                  '<summary>Diff (first 100 lines)</summary>',
+                  '',
+                  '```diff',
+                  noticeDiff,
+                  '```',
+                  '',
+                  '</details>',
+                );
+              }
             }
 
             sections.push('', `[View full run](${runUrl})`);

@@ -1,13 +1,206 @@
-name: ORT License Compliance
+name: ORT License Compliance (Reusable)
 
 on:
   pull_request:
     branches:
       - main
+  workflow_call:
+    inputs:
+      ort-config-repo:
+        description: Repository containing shared ORT config
+        type: string
+        default: timo-reymann/.github
+      ort-config-ref:
+        description: Branch/tag of the config repo
+        type: string
+        default: main
+      ort-config-path:
+        description: Path within the config repo where ORT config files live
+        type: string
+        default: ort-config
+      report-formats:
+        description: Comma-separated list of ORT report formats
+        type: string
+        default: PlainTextTemplate,StaticHtml,WebApp,PdfTemplate
 
 permissions:
   contents: read
 
 jobs:
   ort:
-    uses: timo-reymann/.github/.github/workflows/ort.yml@main
+    name: OSS Review Toolkit
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    container:
+      image: ghcr.io/oss-review-toolkit/ort
+      options: --user 0:0
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Checkout ORT config
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ inputs.ort-config-repo }}
+          ref: ${{ inputs.ort-config-ref }}
+          path: ort-config
+
+      - name: Cache dependencies
+        id: cache-dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cabal/packages
+            ~/.cabal/store
+            ~/.cache/go-build
+            ~/.cache/pip
+            ~/.cache/yarn
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            ~/.composer
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+            ~/.ivy2/cache
+            ~/.local/share/virtualenvs
+            ~/.m2/repository
+            ~/.npm
+            ~/.nuget/packages
+            !~/.nuget/packages/unwanted
+            ~/.sbt
+            ~/.stack-work
+            ~/go/pkg/mod
+            $HOME/$ORT_HOME_PATH/cache
+          key: ort-deps-cache
+
+      - name: Cache ORT
+        id: cache-ort
+        uses: actions/cache@v4
+        with:
+          path: |
+            /root/.ort/scanner
+          key: ort-cache
+
+      - name: Prepare directories
+        run: |
+          mkdir -p ort/analyze ort/scanner ort/evaluation ort/report
+
+      - name: Analyze
+        run: |
+          ort -c ort-config/${{ inputs.ort-config-path }}/config.yml analyze -i . -o ort/analyze
+
+      - name: Scan
+        run: |
+          ort -c ort-config/${{ inputs.ort-config-path }}/config.yml scan -i ort/analyze/analyzer-result.yml -o ort/scanner
+
+      - name: Evaluate
+        id: evaluate
+        run: |
+          ort -c ort-config/${{ inputs.ort-config-path }}/config.yml evaluate \
+            --rules-file ort-config/${{ inputs.ort-config-path }}/evaluator.rules.kts \
+            --license-classifications-file ort-config/${{ inputs.ort-config-path }}/license-classifications.yml \
+            -i ort/scanner/scan-result.yml \
+            -o ort/evaluation
+
+      - name: Report
+        if: always() && steps.evaluate.outcome != 'skipped'
+        run: |
+          ort -c ort-config/${{ inputs.ort-config-path }}/config.yml report \
+            -i ort/evaluation/evaluation-result.yml \
+            -o ort/report \
+            --report-formats ${{ inputs.report-formats }}
+
+      - name: Upload HTML report
+        id: upload-html
+        if: always() && steps.evaluate.outcome != 'skipped' && contains(inputs.report-formats, 'StaticHtml')
+        uses: actions/upload-artifact@v4
+        with:
+          name: ort-report-html
+          path: ort/report/*html*
+
+      - name: Upload PDF report
+        id: upload-pdf
+        if: always() && steps.evaluate.outcome != 'skipped' && contains(inputs.report-formats, 'PdfTemplate')
+        uses: actions/upload-artifact@v4
+        with:
+          name: ort-report-pdf
+          path: ort/report/*.pdf
+
+      - name: Upload plain text report
+        id: upload-text
+        if: always() && steps.evaluate.outcome != 'skipped' && contains(inputs.report-formats, 'PlainTextTemplate')
+        uses: actions/upload-artifact@v4
+        with:
+          name: ort-report-plain-text
+          path: ort/report/*PlainTextTemplate*
+
+      - name: Upload WebApp report
+        id: upload-webapp
+        if: always() && steps.evaluate.outcome != 'skipped' && contains(inputs.report-formats, 'WebApp')
+        uses: actions/upload-artifact@v4
+        with:
+          name: ort-report-webapp
+          path: ort/report/*webapp*
+
+      - name: Comment on PR
+        if: always() && steps.evaluate.outcome != 'skipped' && github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+            const formats = '${{ inputs.report-formats }}';
+            const lines = [];
+
+            if (formats.includes('StaticHtml')) {
+              lines.push(`- [:page_facing_up: HTML Report](${runUrl}/artifacts/ort-report-html)`);
+            }
+            if (formats.includes('PdfTemplate')) {
+              lines.push(`- [:closed_book: PDF Report](${runUrl}/artifacts/ort-report-pdf)`);
+            }
+            if (formats.includes('PlainTextTemplate')) {
+              lines.push(`- [:pencil: Plain Text Report](${runUrl}/artifacts/ort-report-plain-text)`);
+            }
+            if (formats.includes('WebApp')) {
+              lines.push(`- [:globe_with_meridians: WebApp Report](${runUrl}/artifacts/ort-report-webapp)`);
+            }
+
+            const evaluate = '${{ steps.evaluate.outcome }}';
+            const status = evaluate === 'success' ? ':white_check_mark: passed' : ':x: failed';
+
+            const body = [
+              `## ORT License Compliance — ${status}`,
+              '',
+              '### Reports',
+              ...lines,
+              '',
+              `[View full run](${runUrl})`,
+            ].join('\n');
+
+            // Find and update existing comment or create new one
+            const marker = '<!-- ort-license-compliance -->';
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+            const existing = comments.find(c => c.body.includes(marker));
+            const fullBody = `${marker}\n${body}`;
+
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existing.id,
+                body: fullBody,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body: fullBody,
+              });
+            }

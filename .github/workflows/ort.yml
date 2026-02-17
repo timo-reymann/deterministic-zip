@@ -13,8 +13,8 @@ env:
   ORT_DATA_DIR: /home/ort/.ort
   ORT_RUN: >-
     docker run --rm
-    -v "${{ github.workspace }}:/work"
-    -v "${{ github.workspace }}/.ort-cache:/home/ort/.ort"
+    -v "${{ github.workspace }}:/work" \
+    --mount type=bind,source=$HOME,target=/home/ort \
     -w /work
 
 jobs:
@@ -22,59 +22,86 @@ jobs:
     name: OSS Review Toolkit
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+       - name: Checkout
+         uses: actions/checkout@v4
 
-      - name: Pull ORT image
-        run: |
-          docker pull ${{ env.ORT_IMAGE }}
+       - name: Pull ORT image
+         run: |
+           docker pull ${{ env.ORT_IMAGE }}
 
-      - name: Restore ORT cache
-        uses: actions/cache@v4
-        with:
-          path: .ort-cache
-          key: ort-${{ runner.os }}-${{ hashFiles('go.sum') }}
-          restore-keys: |
-            ort-${{ runner.os }}-
+       - name: Cache dependencies
+         id: cache-dependencies
+         uses: actions/cache@v4
+         with:
+           path: |
+             ~/.cabal/packages
+             ~/.cabal/store
+             ~/.cache/go-build
+             ~/.cache/pip
+             ~/.cache/yarn
+             ~/.cargo/bin/
+             ~/.cargo/registry/index/
+             ~/.cargo/registry/cache/
+             ~/.cargo/git/db/
+             ~/.composer
+             ~/.gradle/caches
+             ~/.gradle/wrapper
+             ~/.ivy2/cache
+             ~/.local/share/virtualenvs
+             ~/.m2/repository
+             ~/.npm
+             ~/.nuget/packages
+             !~/.nuget/packages/unwanted
+             ~/.sbt
+             ~/.stack-work
+             ~/go/pkg/mod
+             $HOME/$ORT_HOME_PATH/cache
+           key: ort-deps-cache
+       - name: Cache ORT scan results
+         id: cache-scan-results
+         uses: actions/cache@v4
+         with:
+           path: '${{ env.HOME}}/ort/scanner/'
+           key: ort-scan-results-cache
 
-      - name: Prepare directories
-        run: |
-          mkdir -p ort/analyze ort/scanner ort/evaluation ort/report
-          mkdir -p .ort-cache/scanner .ort-cache/downloader
-          chmod -R 777 ort/ .ort-cache/
+       - name: Prepare directories
+         run: |
+           mkdir -p ort/analyze ort/scanner ort/evaluation ort/report
+           mkdir -p .ort-cache/scanner .ort-cache/downloader
+           chmod -R 777 ort/
 
-      - name: Analyze
-        run: |
-          ${{ env.ORT_RUN }} ${{ env.ORT_IMAGE }} \
-            analyze -i . -o ort/analyze
+       - name: Analyze
+         run: |
+           ${{ env.ORT_RUN }} ${{ env.ORT_IMAGE }} \
+             analyze -i . -o ort/analyze
 
-      - name: Scan
-        run: |
-          ${{ env.ORT_RUN }} ${{ env.ORT_IMAGE }} \
-            scan -i ort/analyze/analyzer-result.yml -o ort/scanner
+       - name: Scan
+         run: |
+           ${{ env.ORT_RUN }} ${{ env.ORT_IMAGE }} \
+             scan -i ort/analyze/analyzer-result.yml -o ort/scanner
 
-      - name: Evaluate
-        id: evaluate
-        run: |
-          ${{ env.ORT_RUN }} ${{ env.ORT_IMAGE }} \
-            evaluate \
-            --rules-file .ort/evaluator.rules.kts \
-            --license-classifications-file .ort/license-classifications.yml \
-            -i ort/scanner/scan-result.yml \
-            -o ort/evaluation
+       - name: Evaluate
+         id: evaluate
+         run: |
+           ${{ env.ORT_RUN }} ${{ env.ORT_IMAGE }} \
+             evaluate \
+             --rules-file .ort/evaluator.rules.kts \
+             --license-classifications-file .ort/license-classifications.yml \
+             -i ort/scanner/scan-result.yml \
+             -o ort/evaluation
 
-      - name: Report
-        if: always() && steps.evaluate.outcome != 'skipped'
-        run: |
-          ${{ env.ORT_RUN }} ${{ env.ORT_IMAGE }} \
-            report \
-            -i ort/evaluation/evaluation-result.yml \
-            -o ort/report \
-            --report-formats PlainTextTemplate,StaticHtml,WebApp
+       - name: Report
+         if: always() && steps.evaluate.outcome != 'skipped'
+         run: |
+           ${{ env.ORT_RUN }} ${{ env.ORT_IMAGE }} \
+             report \
+             -i ort/evaluation/evaluation-result.yml \
+             -o ort/report \
+             --report-formats PlainTextTemplate,StaticHtml,WebApp
 
-      - name: Upload reports
-        if: always() && steps.evaluate.outcome != 'skipped'
-        uses: actions/upload-artifact@v4
-        with:
-          name: ort-reports
-          path: ort/report/
+       - name: Upload reports
+         if: always() && steps.evaluate.outcome != 'skipped'
+         uses: actions/upload-artifact@v4
+         with:
+           name: ort-reports
+           path: ort/report/

@@ -1,0 +1,78 @@
+name: ORT License Compliance
+
+on:
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  ort:
+    name: OSS Review Toolkit
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Restore ORT cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.ort/scanner
+            ~/.ort/downloader
+          key: ort-${{ runner.os }}-${{ hashFiles('go.sum') }}
+          restore-keys: |
+            ort-${{ runner.os }}-
+
+      - name: Analyze
+        run: |
+          docker run --rm \
+            -v "$PWD:/work" \
+            -v "$HOME/.ort:/.ort" \
+            -w /work \
+            ghcr.io/oss-review-toolkit/ort \
+            analyze -i . -o ort/analyze
+
+      - name: Scan
+        run: |
+          docker run --rm \
+            -v "$PWD:/work" \
+            -v "$HOME/.ort:/.ort" \
+            -w /work \
+            ghcr.io/oss-review-toolkit/ort \
+            scan -i ort/analyze/analyzer-result.yml -o ort/scanner
+
+      - name: Evaluate
+        run: |
+          docker run --rm \
+            -v "$PWD:/work" \
+            -v "$HOME/.ort:/.ort" \
+            -w /work \
+            ghcr.io/oss-review-toolkit/ort \
+            evaluate \
+            --rules-file .ort/evaluator.rules.kts \
+            --license-classifications-file .ort/license-classifications.yml \
+            -i ort/scanner/scan-result.yml \
+            -o ort/evaluation
+
+      - name: Report
+        if: always() && steps.evaluate.outcome != 'skipped'
+        run: |
+          docker run --rm \
+            -v "$PWD:/work" \
+            -v "$HOME/.ort:/.ort" \
+            -w /work \
+            ghcr.io/oss-review-toolkit/ort \
+            report \
+            -i ort/evaluation/evaluation-result.yml \
+            -o ort/report \
+            --report-formats PlainTextTemplate,StaticHtml,WebApp
+
+      - name: Upload reports
+        if: always() && steps.evaluate.outcome != 'skipped'
+        uses: actions/upload-artifact@v4
+        with:
+          name: ort-reports
+          path: ort/report/

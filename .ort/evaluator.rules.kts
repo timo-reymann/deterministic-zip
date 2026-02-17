@@ -367,10 +367,6 @@ val ruleSet = ruleSet(ortResult, licenseInfoResolver, resolutionProvider) {
     vulnerabilityInPackageRule()
     highSeverityVulnerabilityInPackageRule()
 
-    // Rules which get executed for each dependency (of any project):
-    copyleftInDependencyRule()
-    copyleftLimitedInDependencyRule()
-
     // Rules which get executed once:
     deprecatedScopeExcludeReasonInOrtYmlRule()
 

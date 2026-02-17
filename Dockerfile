@@ -1,3 +1,7 @@
+FROM scratch AS license
+COPY NOTICE /NOTICE
+COPY LICENSE /LICENSE
+
 FROM busybox AS bin
 COPY ./dist /binaries
 RUN if [[ "$(arch)" == "x86_64" ]]; then \
@@ -19,6 +23,8 @@ LABEL org.opencontainers.image.authors="Timo Reymann <mail@timo-reymann.de>"
 LABEL org.opencontainers.image.url="https://github.com/timo-reymann/deterministic-zip"
 LABEL org.opencontainers.image.documentation="https://github.com/timo-reymann/deterministic-zip"
 LABEL org.opencontainers.image.source="https://github.com/timo-reymann/deterministic-zip.git"
+
+COPY --from=license / /
 
 ARG BUILD_TIME
 ARG BUILD_VERSION

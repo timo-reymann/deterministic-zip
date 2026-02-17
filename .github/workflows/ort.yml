@@ -100,6 +100,20 @@ jobs:
             -o ort/report \
             --report-formats $ORT_REPORT_FORMATS
 
+      - name: Check NOTICE file
+        id: notice-check
+        if: always() && steps.evaluate.outcome != 'skipped'
+        run: |
+          if [ ! -f NOTICE ]; then
+            echo "outdated=true" >> "$GITHUB_OUTPUT"
+            echo "reason=NOTICE file does not exist in the repository" >> "$GITHUB_OUTPUT"
+          elif ! diff -q NOTICE ort/report/NOTICE_DEFAULT > /dev/null 2>&1; then
+            echo "outdated=true" >> "$GITHUB_OUTPUT"
+            echo "reason=NOTICE file differs from generated NOTICE_DEFAULT" >> "$GITHUB_OUTPUT"
+          else
+            echo "outdated=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Upload HTML report
         id: upload-html
         if: always() && steps.evaluate.outcome != 'skipped' && contains(env.ORT_REPORT_FORMATS, 'StaticHtml')
@@ -138,33 +152,50 @@ jobs:
         with:
           script: |
             const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
-            const formats = process.env.ORT_REPORT_FORMATS;
+            const artifactUrl = (id) => `${runUrl}/artifacts/${id}`;
             const lines = [];
 
-            if (formats.includes('StaticHtml')) {
-              lines.push(`- [:page_facing_up: HTML Report](${runUrl}/artifacts/ort-report-html)`);
+            const htmlId = '${{ steps.upload-html.outputs.artifact-id }}';
+            if (htmlId) {
+              lines.push(`- [:page_facing_up: HTML Report](${artifactUrl(htmlId)})`);
             }
-            if (formats.includes('PdfTemplate')) {
-              lines.push(`- [:closed_book: PDF Report](${runUrl}/artifacts/ort-report-pdf)`);
+            const pdfId = '${{ steps.upload-pdf.outputs.artifact-id }}';
+            if (pdfId) {
+              lines.push(`- [:closed_book: PDF Report](${artifactUrl(pdfId)})`);
             }
-            if (formats.includes('PlainTextTemplate')) {
-              lines.push(`- [:pencil: Plain Text Report](${runUrl}/artifacts/ort-report-plain-text)`);
+            const textId = '${{ steps.upload-text.outputs.artifact-id }}';
+            if (textId) {
+              lines.push(`- [:pencil: Plain Text Report](${artifactUrl(textId)})`);
             }
-            if (formats.includes('WebApp')) {
-              lines.push(`- [:globe_with_meridians: WebApp Report](${runUrl}/artifacts/ort-report-webapp)`);
+            const webappId = '${{ steps.upload-webapp.outputs.artifact-id }}';
+            if (webappId) {
+              lines.push(`- [:globe_with_meridians: WebApp Report](${artifactUrl(webappId)})`);
             }
 
             const evaluate = '${{ steps.evaluate.outcome }}';
-            const status = evaluate === 'success' ? ':white_check_mark: passed' : ':x: failed';
+            const noticeOutdated = '${{ steps.notice-check.outputs.outdated }}' === 'true';
+            const noticeReason = '${{ steps.notice-check.outputs.reason }}';
+            const passed = evaluate === 'success' && !noticeOutdated;
+            const status = passed ? ':white_check_mark: passed' : ':x: failed';
 
-            const body = [
+            const sections = [
               `## ORT License Compliance — ${status}`,
               '',
               '### Reports',
               ...lines,
-              '',
-              `[View full run](${runUrl})`,
-            ].join('\n');
+            ];
+
+            if (noticeOutdated) {
+              sections.push(
+                '',
+                '### :warning: NOTICE file out of date',
+                `${noticeReason}. Please update the \`NOTICE\` file with the contents of the generated \`NOTICE_DEFAULT\`.`,
+              );
+            }
+
+            sections.push('', `[View full run](${runUrl})`);
+
+            const body = sections.join('\n');
 
             // Find and update existing comment or create new one
             const marker = '<!-- ort-license-compliance -->';

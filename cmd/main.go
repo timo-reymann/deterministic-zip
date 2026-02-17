@@ -2,12 +2,13 @@ package cmd
 
 import (
 	"errors"
+	"log"
+	"os"
+
 	"github.com/timo-reymann/deterministic-zip/pkg/cli"
 	"github.com/timo-reymann/deterministic-zip/pkg/features"
 	"github.com/timo-reymann/deterministic-zip/pkg/output"
 	"github.com/timo-reymann/deterministic-zip/pkg/zip"
-	"log"
-	"os"
 )
 
 // Variable to allow mocking os.Exit in tests
@@ -30,9 +31,9 @@ func errCheck(err error, c *cli.Configuration) {
 }
 
 // Execute the application
-func Execute() {
+func Execute(noticeContent string) {
 	c := cli.NewConfiguration()
-	errCheck(c.Parse(), c)
+	errCheck(c.Parse(noticeContent), c)
 
 	compressionSpec, err := zip.GetCompressionMethod(c.CompressionMethod)
 	errCheck(err, c)

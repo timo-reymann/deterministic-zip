@@ -357,17 +357,10 @@ fun RuleSet.wrongLicenseInLicenseFileRule() = projectSourceRule("WRONG_LICENSE_I
 fun RuleSet.licenseCompatibilityRule() = packageRule("LICENSE_COMPATIBILITY") {
     require { -isExcluded() }
 
-    val allowedRootLicenses = setOf("Apache-2.0", "MIT", "GPL-3.0", "Unlicense")
-    val detectedRootLicenses = projectSourceGetDetectedLicensesByFilePath("LICENSE").values.flatten().toSet()
-    val rootLicense = detectedRootLicenses.firstOrNull() ?: "Apache-2.0" // Default to Apache-2.0
-
-    val allowedLicenses = when (rootLicense) {
-        "Apache-2.0" -> LicensePresets["Apache-2.0"]!!
-        "MIT"        -> LicensePresets["MIT"]!!
-        "GPL-3.0"    -> LicensePresets["GPL-3.0"]!!
-        "Unlicense"  -> LicensePresets["Unlicense"]!!
-        else         -> defaultAllowedLicenses
-    }
+    // projectSourceGetDetectedLicensesByFilePath is only available in projectSourceRule contexts,
+    // so the root license is configured statically here.
+    val rootLicense = "GPL-3.0"
+    val allowedLicenses = LicensePresets[rootLicense] ?: defaultAllowedLicenses
 
     licenseRule("LICENSE_COMPATIBILITY", LicenseView.CONCLUDED_OR_DECLARED_AND_DETECTED) {
         require {

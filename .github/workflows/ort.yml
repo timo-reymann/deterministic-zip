@@ -26,9 +26,13 @@ jobs:
           restore-keys: |
             ort-${{ runner.os }}-
 
+      - name: Prepare ORT directories
+        run: mkdir -p ort/analyze ort/scanner ort/evaluation ort/report ~/.ort/scanner ~/.ort/downloader
+
       - name: Analyze
         run: |
           docker run --rm \
+            -u "$(id -u):$(id -g)" \
             -v "$PWD:/work" \
             -v "$HOME/.ort:/.ort" \
             -w /work \
@@ -38,6 +42,7 @@ jobs:
       - name: Scan
         run: |
           docker run --rm \
+            -u "$(id -u):$(id -g)" \
             -v "$PWD:/work" \
             -v "$HOME/.ort:/.ort" \
             -w /work \
@@ -47,6 +52,7 @@ jobs:
       - name: Evaluate
         run: |
           docker run --rm \
+            -u "$(id -u):$(id -g)" \
             -v "$PWD:/work" \
             -v "$HOME/.ort:/.ort" \
             -w /work \
@@ -61,6 +67,7 @@ jobs:
         if: always() && steps.evaluate.outcome != 'skipped'
         run: |
           docker run --rm \
+            -u "$(id -u):$(id -g)" \
             -v "$PWD:/work" \
             -v "$HOME/.ort:/.ort" \
             -w /work \

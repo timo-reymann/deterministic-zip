@@ -47,8 +47,6 @@ To make your life easier there is also a handy template available so feel free t
 ## License
 By contributing, you agree that your contributions will be licensed under its GPL-3.0 license.
 
-
-
 ## AI-Generated Contributions Policy
 
 I accept AI-generated contributions to my projects, but with the following important conditions:

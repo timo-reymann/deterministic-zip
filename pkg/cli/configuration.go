@@ -3,13 +3,14 @@ package cli
 import (
 	"errors"
 	"fmt"
-	flag "github.com/spf13/pflag"
 	"os"
 	"path/filepath"
 	"runtime"
 	"strconv"
 	"strings"
 	"time"
+
+	flag "github.com/spf13/pflag"
 )
 
 // ModifiedTimestamp contains the default modification timestamp used for all files in the archive
@@ -60,6 +61,7 @@ type Configuration struct {
 
 	isVersionCMD bool
 	isHelpCMD    bool
+	isLicenseCMD bool
 }
 
 func (conf *Configuration) addBoolFlag(field *bool, long string, short string, val bool, usage string) {
@@ -91,6 +93,7 @@ func (conf *Configuration) defineFlags() {
 	conf.addBoolFlag(&conf.LogFileAppend, "log-append", "", false, "Append to existing logfile. Default is to overwrite.")
 	conf.addBoolFlag(&conf.isVersionCMD, "version", "", false, "Show version info")
 	conf.addBoolFlag(&conf.isHelpCMD, "Help", "h", false, "Show available commands")
+	conf.addBoolFlag(&conf.isLicenseCMD, "license", "", false, "Show license information")
 }
 
 func (conf *Configuration) parseVarargs() error {
@@ -148,7 +151,7 @@ func (conf *Configuration) parseModifiedDate() (*time.Time, error) {
 }
 
 // Parse the configuration from cli args
-func (conf *Configuration) Parse() error {
+func (conf *Configuration) Parse(noticeContent string) error {
 	err := conf.flagSet.Parse(os.Args[1:])
 
 	if errors.Is(err, flag.ErrHelp) || conf.isHelpCMD {
@@ -156,6 +159,9 @@ func (conf *Configuration) Parse() error {
 		return ErrAbort
 	} else if conf.isVersionCMD {
 		PrintVersionInfo()
+		return ErrAbort
+	} else if conf.isLicenseCMD {
+		fmt.Println(noticeContent)
 		return ErrAbort
 	}
 

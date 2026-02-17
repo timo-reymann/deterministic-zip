@@ -127,7 +127,7 @@ func TestConfiguration_Parse_HelpFlag(t *testing.T) {
 			os.Args = tt.args
 
 			// Call Parse - should handle help flag gracefully
-			config.Parse()
+			config.Parse("")
 
 			t.Logf("Parse() with args %v completed successfully", tt.args)
 		})
@@ -167,7 +167,7 @@ func TestConfiguration_Parse_VersionFlag(t *testing.T) {
 			os.Args = tt.args
 
 			// Call Parse - should handle version flag gracefully
-			config.Parse()
+			config.Parse("")
 
 			t.Logf("Parse() with args %v completed successfully", tt.args)
 		})
@@ -213,7 +213,7 @@ func TestConfiguration_Parse_HelpAndVersionFlags(t *testing.T) {
 			os.Args = tt.args
 
 			// Call Parse
-			config.Parse()
+			config.Parse("")
 
 			t.Logf("Parse() with args %v completed successfully", tt.args)
 		})
@@ -232,7 +232,7 @@ func TestConfiguration_Parse_EmptyArgs(t *testing.T) {
 	os.Args = []string{"program"}
 
 	// Call Parse
-	config.Parse()
+	config.Parse("")
 
 	t.Log("Parse() with empty args completed successfully")
 }
@@ -276,7 +276,7 @@ func TestConfiguration_Parse_InvalidHelpVariations(t *testing.T) {
 			os.Args = tt.args
 
 			// Call Parse
-			config.Parse()
+			config.Parse("")
 
 			t.Logf("Parse() with args %v completed successfully", tt.args)
 		})
@@ -319,8 +319,8 @@ func TestConfiguration_Parse_MultipleInstances(t *testing.T) {
 			os.Args = tt.args
 
 			// Call Parse on both instances
-			config1.Parse()
-			config2.Parse()
+			config1.Parse("")
+			config2.Parse("")
 
 			t.Logf("Multiple Parse() calls with args %v completed successfully", tt.args)
 		})

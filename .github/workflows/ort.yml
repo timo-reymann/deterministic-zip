@@ -1,0 +1,14 @@
+name: ORT License Compliance
+
+on:
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  license-check:
+    uses: timo-reymann/.github/.github/workflows/ort.yml@main

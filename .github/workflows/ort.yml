@@ -8,6 +8,15 @@ on:
 permissions:
   contents: read
 
+env:
+  ORT_IMAGE: ghcr.io/oss-review-toolkit/ort
+  ORT_DATA_DIR: /home/ort/.ort
+  ORT_RUN: >-
+    docker run --rm
+    -v "${{ github.workspace }}:/work"
+    -v "${{ github.workspace }}/.ort-cache:/home/ort/.ort"
+    -w /work
+
 jobs:
   ort:
     name: OSS Review Toolkit
@@ -19,44 +28,31 @@ jobs:
       - name: Restore ORT cache
         uses: actions/cache@v4
         with:
-          path: |
-            ~/.ort/scanner
-            ~/.ort/downloader
+          path: .ort-cache
           key: ort-${{ runner.os }}-${{ hashFiles('go.sum') }}
           restore-keys: |
             ort-${{ runner.os }}-
 
-      - name: Prepare ORT directories
-        run: mkdir -p ort/analyze ort/scanner ort/evaluation ort/report ~/.ort/scanner ~/.ort/downloader
+      - name: Prepare directories
+        run: |
+          mkdir -p ort/analyze ort/scanner ort/evaluation ort/report
+          mkdir -p .ort-cache/scanner .ort-cache/downloader
+          chmod -R 777 ort/ .ort-cache/
 
       - name: Analyze
         run: |
-          docker run --rm \
-            -u "$(id -u):$(id -g)" \
-            -v "$PWD:/work" \
-            -v "$HOME/.ort:/.ort" \
-            -w /work \
-            ghcr.io/oss-review-toolkit/ort \
+          ${{ env.ORT_RUN }} ${{ env.ORT_IMAGE }} \
             analyze -i . -o ort/analyze
 
       - name: Scan
         run: |
-          docker run --rm \
-            -u "$(id -u):$(id -g)" \
-            -v "$PWD:/work" \
-            -v "$HOME/.ort:/.ort" \
-            -w /work \
-            ghcr.io/oss-review-toolkit/ort \
+          ${{ env.ORT_RUN }} ${{ env.ORT_IMAGE }} \
             scan -i ort/analyze/analyzer-result.yml -o ort/scanner
 
       - name: Evaluate
+        id: evaluate
         run: |
-          docker run --rm \
-            -u "$(id -u):$(id -g)" \
-            -v "$PWD:/work" \
-            -v "$HOME/.ort:/.ort" \
-            -w /work \
-            ghcr.io/oss-review-toolkit/ort \
+          ${{ env.ORT_RUN }} ${{ env.ORT_IMAGE }} \
             evaluate \
             --rules-file .ort/evaluator.rules.kts \
             --license-classifications-file .ort/license-classifications.yml \
@@ -66,12 +62,7 @@ jobs:
       - name: Report
         if: always() && steps.evaluate.outcome != 'skipped'
         run: |
-          docker run --rm \
-            -u "$(id -u):$(id -g)" \
-            -v "$PWD:/work" \
-            -v "$HOME/.ort:/.ort" \
-            -w /work \
-            ghcr.io/oss-review-toolkit/ort \
+          ${{ env.ORT_RUN }} ${{ env.ORT_IMAGE }} \
             report \
             -i ort/evaluation/evaluation-result.yml \
             -o ort/report \

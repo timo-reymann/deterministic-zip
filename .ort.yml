@@ -1,0 +1,14 @@
+curations:
+  license_findings:
+    - path: "CONTRIBUTING.md"
+      start_lines: "23"
+      detected_license: "GPL-1.0-or-later"
+      reason: "INCORRECT"
+      comment: "False positive - the text refers to GPL-3.0, not GPL-1.0."
+      concluded_license: "GPL-3.0-only"
+    - path: "CONTRIBUTING.md"
+      start_lines: "48"
+      detected_license: "NOASSERTION"
+      reason: "INCORRECT"
+      comment: "False positive - the text clearly states GPL-3.0 license."
+      concluded_license: "GPL-3.0-only"

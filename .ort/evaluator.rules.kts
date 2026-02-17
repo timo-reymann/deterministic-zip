@@ -18,6 +18,7 @@
  * License-Filename: LICENSE
  */
 
+val allowedRootLicenses = setOf("Apache-2.0", "MIT", "GPL-3.0", "GPL-3.0-only", "Unlicense")
 
 /**
  * Import the license classifications from license-classifications.yml.
@@ -67,15 +68,6 @@ val handledLicenses = listOf(
     it.toSet()
 }
 
-
-/**
- * Return the Markdown-formatted text to aid users with resolving violations.
- */
-fun PackageRule.howToFixDefault() = """
-        A text written in MarkDown to help users resolve policy violations
-        which may link to additional resources.
-    """.trimIndent()
-
 /**
  * Set of matchers to help keep policy rules easy to understand
  */
@@ -110,7 +102,7 @@ fun RuleSet.unhandledLicenseRule() = packageRule("UNHANDLED_LICENSE") {
             "The license $license is currently not covered by policy rules. " +
                     "The license was ${licenseSource.name.lowercase()} in package " +
                     "${pkg.metadata.id.toCoordinates()}.",
-            howToFixDefault()
+            "Add the license rule to the classifications."
         )
     }
 }
@@ -124,7 +116,7 @@ fun RuleSet.unmappedDeclaredLicenseRule() = packageRule("UNMAPPED_DECLARED_LICEN
         warning(
             "The declared license '$unmappedLicense' could not be mapped to a valid license or parsed as an SPDX " +
                     "expression. The license was found in package ${pkg.metadata.id.toCoordinates()}.",
-            howToFixDefault()
+            "Add a license classification for it"
         )
     }
 }
@@ -158,7 +150,7 @@ fun RuleSet.vulnerabilityInPackageRule() = packageRule("VULNERABILITY_IN_PACKAGE
     issue(
         Severity.WARNING,
         "The package ${pkg.metadata.id.toCoordinates()} has a vulnerability",
-        howToFixDefault()
+        "Check if an upstream patch is available and upgrade."
     )
 }
 
@@ -175,7 +167,7 @@ fun RuleSet.highSeverityVulnerabilityInPackageRule() = packageRule("HIGH_SEVERIT
         Severity.ERROR,
         "The package ${pkg.metadata.id.toCoordinates()} has a vulnerability with $scoringSystem severity > " +
             "$scoreThreshold.",
-        howToFixDefault()
+        "Check if an upstream patch is available and upgrade."
     )
 }
 
@@ -250,7 +242,6 @@ fun RuleSet.wrongLicenseInLicenseFileRule() = projectSourceRule("WRONG_LICENSE_I
         +projectSourceHasFile("LICENSE")
     }
 
-    val allowedRootLicenses = setOf("Apache-2.0", "MIT", "GPL-3.0", "Unlicense")
     val detectedRootLicenses = projectSourceGetDetectedLicensesByFilePath("LICENSE").values.flatten().toSet()
     val wrongLicenses = detectedRootLicenses - allowedRootLicenses
 
@@ -281,7 +272,7 @@ fun RuleSet.licenseCompatibilityRule() = packageRule("LICENSE_COMPATIBILITY") {
             error(
                 "The license '$license' is incompatible with the project's root license '$detectedRootLicense'. " +
                 "Allowed licenses: ${allowedLicenses.joinToString()}.",
-                howToFixDefault()
+                "Remove the dependency and replace it with an alternative"
             )
         }
     }

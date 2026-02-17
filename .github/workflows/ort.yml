@@ -8,26 +8,14 @@ on:
 permissions:
   contents: read
 
-env:
-  ORT_IMAGE: ghcr.io/oss-review-toolkit/ort
-  ORT_DATA_DIR: /home/ort/.ort
-  ORT_RUN: >-
-    docker run --rm
-    -v "${{ github.workspace }}:/work" \
-    --mount type=bind,source=$HOME,target=/home/ort \
-    -w /work
-
 jobs:
   ort:
     name: OSS Review Toolkit
     runs-on: ubuntu-latest
+    container: ghcr.io/oss-review-toolkit/ort
     steps:
        - name: Checkout
          uses: actions/checkout@v4
-
-       - name: Pull ORT image
-         run: |
-           docker pull ${{ env.ORT_IMAGE }}
 
        - name: Cache dependencies
          id: cache-dependencies
@@ -57,34 +45,30 @@ jobs:
              ~/go/pkg/mod
              $HOME/$ORT_HOME_PATH/cache
            key: ort-deps-cache
+
        - name: Cache ORT scan results
          id: cache-scan-results
          uses: actions/cache@v4
          with:
-           path: '${{ env.HOME}}/ort/scanner/'
+           path: '~/ort/scanner/'
            key: ort-scan-results-cache
 
        - name: Prepare directories
          run: |
            mkdir -p ort/analyze ort/scanner ort/evaluation ort/report
-           mkdir -p .ort-cache/scanner .ort-cache/downloader
-           chmod -R 777 ort/
 
        - name: Analyze
          run: |
-           ${{ env.ORT_RUN }} ${{ env.ORT_IMAGE }} \
-             analyze -i . -o ort/analyze
+           ort analyze -i . -o ort/analyze
 
        - name: Scan
          run: |
-           ${{ env.ORT_RUN }} ${{ env.ORT_IMAGE }} \
-             scan -i ort/analyze/analyzer-result.yml -o ort/scanner
+           ort scan -i ort/analyze/analyzer-result.yml -o ort/scanner
 
        - name: Evaluate
          id: evaluate
          run: |
-           ${{ env.ORT_RUN }} ${{ env.ORT_IMAGE }} \
-             evaluate \
+           ort evaluate \
              --rules-file .ort/evaluator.rules.kts \
              --license-classifications-file .ort/license-classifications.yml \
              -i ort/scanner/scan-result.yml \
@@ -93,8 +77,7 @@ jobs:
        - name: Report
          if: always() && steps.evaluate.outcome != 'skipped'
          run: |
-           ${{ env.ORT_RUN }} ${{ env.ORT_IMAGE }} \
-             report \
+           ort report \
              -i ort/evaluation/evaluation-result.yml \
              -o ort/report \
              --report-formats PlainTextTemplate,StaticHtml,WebApp

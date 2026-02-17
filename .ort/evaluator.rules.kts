@@ -27,11 +27,18 @@ val copyleftLicenses = licenseClassifications.licensesByCategory["copyleft"].orE
 val copyleftLimitedLicenses = licenseClassifications.licensesByCategory["copyleft-limited"].orEmpty()
 val publicDomainLicenses = licenseClassifications.licensesByCategory["public-domain"].orEmpty()
 
+val gplCompatible = copyleftLicenses + copyleftLimitedLicenses + permissiveLicenses + publicDomainLicenses
+
 val LicensePresets = mapOf(
-    "Apache-2.0" to permissiveLicenses + copyleftLimitedLicenses + publicDomainLicenses + setOf("Unlicense"),
-    "MIT" to permissiveLicenses + copyleftLicenses + copyleftLimitedLicenses + publicDomainLicenses + setOf("Unlicense"),
-    "GPL-3.0" to setOf("GPL-3.0", "LGPL-3.0", "GPL-2.0", "AGPL-3.0") + permissiveLicenses + publicDomainLicenses + setOf("Unlicense"),
-    "Unlicense" to permissiveLicenses + copyleftLimitedLicenses + publicDomainLicenses + setOf("Unlicense")
+    "Apache-2.0" to permissiveLicenses + copyleftLimitedLicenses + publicDomainLicenses,
+    "MIT" to permissiveLicenses + copyleftLicenses + copyleftLimitedLicenses + publicDomainLicenses,
+    "GPL-2.0-only" to gplCompatible,
+    "GPL-2.0-or-later" to gplCompatible,
+    "GPL-3.0-only" to gplCompatible,
+    "GPL-3.0-or-later" to gplCompatible,
+    "AGPL-3.0-only" to gplCompatible,
+    "AGPL-3.0-or-later" to gplCompatible,
+    "Unlicense" to permissiveLicenses + copyleftLimitedLicenses + publicDomainLicenses
 )
 
 val defaultAllowedLicenses = permissiveLicenses + copyleftLimitedLicenses + publicDomainLicenses + setOf("Unlicense")
@@ -268,14 +275,15 @@ fun RuleSet.licenseCompatibilityRule() = packageRule("LICENSE_COMPATIBILITY") {
     licenseRule("LICENSE_COMPATIBILITY", LicenseView.CONCLUDED_OR_DECLARED_AND_DETECTED) {
         require {
             -isExcluded()
-            license !in allowedLicenses
         }
 
-        error(
-            "The license '$license' is incompatible with the project's root license '$detectedRootLicense'. " +
-            "Allowed licenses: ${allowedLicenses.joinToString()}.",
-            howToFixDefault()
-        )
+        if (license !in allowedLicenses) {
+            error(
+                "The license '$license' is incompatible with the project's root license '$detectedRootLicense'. " +
+                "Allowed licenses: ${allowedLicenses.joinToString()}.",
+                howToFixDefault()
+            )
+        }
     }
 }
 

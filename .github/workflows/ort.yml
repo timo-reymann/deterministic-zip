@@ -106,7 +106,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ort-report-html
-          path: ort/report/*html*
+          path: ort/report/scan-report.html
 
       - name: Upload PDF report
         id: upload-pdf
@@ -114,7 +114,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ort-report-pdf
-          path: ort/report/*.pdf
+          path: ort/report/AsciiDoc_disclosure_document.pdf
 
       - name: Upload plain text report
         id: upload-text
@@ -122,7 +122,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ort-report-plain-text
-          path: ort/report/*PlainTextTemplate*
+          path: ort/report/NOTICE_DEFAULT
 
       - name: Upload WebApp report
         id: upload-webapp
@@ -130,7 +130,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ort-report-webapp
-          path: ort/report/*webapp*
+          path: ort/report/scan-report-web-app.html
 
       - name: Comment on PR
         if: always() && steps.evaluate.outcome != 'skipped' && github.event_name == 'pull_request'

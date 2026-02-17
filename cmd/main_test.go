@@ -3,11 +3,12 @@ package cmd
 import (
 	"bytes"
 	"errors"
-	"github.com/timo-reymann/deterministic-zip/pkg/cli"
 	"log"
 	"os"
 	"path/filepath"
 	"testing"
+
+	"github.com/timo-reymann/deterministic-zip/pkg/cli"
 )
 
 // TestErrCheck tests the error handling function
@@ -187,7 +188,7 @@ func TestExecute_SmokeTest(t *testing.T) {
 					}
 				}()
 
-				Execute()
+				Execute("")
 
 				// If we get here and shouldExit is true, that's unexpected
 				if tt.shouldExit {
@@ -277,7 +278,7 @@ func TestExecute_WithValidMinimalArgs(t *testing.T) {
 		}
 	}()
 
-	Execute()
+	Execute("")
 	// If we got here without panicking, that's good
 	// Check if output file was created (best case scenario)
 	if _, err := os.Stat(outputFile); err == nil {

@@ -1,27 +1,9 @@
-name: ORT License Compliance (Reusable)
+name: ORT License Compliance
 
 on:
   pull_request:
     branches:
       - main
-  workflow_call:
-    inputs:
-      ort-config-repo:
-        description: Repository containing shared ORT config
-        type: string
-        default: timo-reymann/.github
-      ort-config-ref:
-        description: Branch/tag of the config repo
-        type: string
-        default: main
-      ort-config-path:
-        description: Path within the config repo where ORT config files live
-        type: string
-        default: ort-config
-      report-formats:
-        description: Comma-separated list of ORT report formats
-        type: string
-        default: PlainTextTemplate,StaticHtml,WebApp,PdfTemplate
 
 permissions:
   contents: read
@@ -36,6 +18,11 @@ jobs:
     container:
       image: ghcr.io/oss-review-toolkit/ort
       options: --user 0:0
+    env:
+      ORT_CONFIG_REPO: ${{ inputs.ort-config-repo || 'timo-reymann/.github' }}
+      ORT_CONFIG_REF: ${{ inputs.ort-config-ref || 'main' }}
+      ORT_CONFIG_PATH: ${{ inputs.ort-config-path || 'ort-config' }}
+      ORT_REPORT_FORMATS: ${{ inputs.report-formats || 'PlainTextTemplate,StaticHtml,WebApp,PdfTemplate' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -43,8 +30,8 @@ jobs:
       - name: Checkout ORT config
         uses: actions/checkout@v4
         with:
-          repository: ${{ inputs.ort-config-repo }}
-          ref: ${{ inputs.ort-config-ref }}
+          repository: ${{ env.ORT_CONFIG_REPO }}
+          ref: ${{ env.ORT_CONFIG_REF }}
           path: ort-config
 
       - name: Cache dependencies
@@ -90,32 +77,32 @@ jobs:
 
       - name: Analyze
         run: |
-          ort -c ort-config/${{ inputs.ort-config-path }}/config.yml analyze -i . -o ort/analyze
+          ort -c ort-config/$ORT_CONFIG_PATH/config.yml analyze -i . -o ort/analyze
 
       - name: Scan
         run: |
-          ort -c ort-config/${{ inputs.ort-config-path }}/config.yml scan -i ort/analyze/analyzer-result.yml -o ort/scanner
+          ort -c ort-config/$ORT_CONFIG_PATH/config.yml scan -i ort/analyze/analyzer-result.yml -o ort/scanner
 
       - name: Evaluate
         id: evaluate
         run: |
-          ort -c ort-config/${{ inputs.ort-config-path }}/config.yml evaluate \
-            --rules-file ort-config/${{ inputs.ort-config-path }}/evaluator.rules.kts \
-            --license-classifications-file ort-config/${{ inputs.ort-config-path }}/license-classifications.yml \
+          ort -c ort-config/$ORT_CONFIG_PATH/config.yml evaluate \
+            --rules-file ort-config/$ORT_CONFIG_PATH/evaluator.rules.kts \
+            --license-classifications-file ort-config/$ORT_CONFIG_PATH/license-classifications.yml \
             -i ort/scanner/scan-result.yml \
             -o ort/evaluation
 
       - name: Report
         if: always() && steps.evaluate.outcome != 'skipped'
         run: |
-          ort -c ort-config/${{ inputs.ort-config-path }}/config.yml report \
+          ort -c ort-config/$ORT_CONFIG_PATH/config.yml report \
             -i ort/evaluation/evaluation-result.yml \
             -o ort/report \
-            --report-formats ${{ inputs.report-formats }}
+            --report-formats $ORT_REPORT_FORMATS
 
       - name: Upload HTML report
         id: upload-html
-        if: always() && steps.evaluate.outcome != 'skipped' && contains(inputs.report-formats, 'StaticHtml')
+        if: always() && steps.evaluate.outcome != 'skipped' && contains(env.ORT_REPORT_FORMATS, 'StaticHtml')
         uses: actions/upload-artifact@v4
         with:
           name: ort-report-html
@@ -123,7 +110,7 @@ jobs:
 
       - name: Upload PDF report
         id: upload-pdf
-        if: always() && steps.evaluate.outcome != 'skipped' && contains(inputs.report-formats, 'PdfTemplate')
+        if: always() && steps.evaluate.outcome != 'skipped' && contains(env.ORT_REPORT_FORMATS, 'PdfTemplate')
         uses: actions/upload-artifact@v4
         with:
           name: ort-report-pdf
@@ -131,7 +118,7 @@ jobs:
 
       - name: Upload plain text report
         id: upload-text
-        if: always() && steps.evaluate.outcome != 'skipped' && contains(inputs.report-formats, 'PlainTextTemplate')
+        if: always() && steps.evaluate.outcome != 'skipped' && contains(env.ORT_REPORT_FORMATS, 'PlainTextTemplate')
         uses: actions/upload-artifact@v4
         with:
           name: ort-report-plain-text
@@ -139,7 +126,7 @@ jobs:
 
       - name: Upload WebApp report
         id: upload-webapp
-        if: always() && steps.evaluate.outcome != 'skipped' && contains(inputs.report-formats, 'WebApp')
+        if: always() && steps.evaluate.outcome != 'skipped' && contains(env.ORT_REPORT_FORMATS, 'WebApp')
         uses: actions/upload-artifact@v4
         with:
           name: ort-report-webapp
@@ -151,7 +138,7 @@ jobs:
         with:
           script: |
             const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
-            const formats = '${{ inputs.report-formats }}';
+            const formats = process.env.ORT_REPORT_FORMATS;
             const lines = [];
 
             if (formats.includes('StaticHtml')) {

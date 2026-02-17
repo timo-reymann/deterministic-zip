@@ -36,6 +36,14 @@ val LicensePresets = mapOf(
 
 val defaultAllowedLicenses = permissiveLicenses + copyleftLimitedLicenses + publicDomainLicenses + setOf("Unlicense")
 
+val detectedRootLicense = ortResult.getScanResults()
+    .flatMap { (_, results) -> results }
+    .flatMap { it.summary.licenseFindings }
+    .filter { it.location.path == "LICENSE" }
+    .map { it.license.toString() }
+    .toSet()
+    .firstOrNull() ?: "Apache-2.0"
+
 // The complete set of licenses covered by policy rules.
 val handledLicenses = listOf(
     permissiveLicenses,
@@ -73,22 +81,8 @@ fun PackageRule.LicenseRule.isHandled() =
             license in handledLicenses && ("-exception" !in license.toString() || " WITH " in license.toString())
     }
 
-fun PackageRule.LicenseRule.isCopyleft() =
-    object : RuleMatcher {
-        override val description = "isCopyleft($license)"
-
-        override fun matches() = license in copyleftLicenses
-    }
-
-fun PackageRule.LicenseRule.isCopyleftLimited() =
-    object : RuleMatcher {
-        override val description = "isCopyleftLimited($license)"
-
-        override fun matches() = license in copyleftLimitedLicenses
-    }
-
 /**
- * Example policy rules
+ * Policy rules
  */
 
 fun RuleSet.unhandledLicenseRule() = packageRule("UNHANDLED_LICENSE") {
@@ -125,58 +119,6 @@ fun RuleSet.unmappedDeclaredLicenseRule() = packageRule("UNMAPPED_DECLARED_LICEN
                     "expression. The license was found in package ${pkg.metadata.id.toCoordinates()}.",
             howToFixDefault()
         )
-    }
-}
-
-fun RuleSet.copyleftInSourceRule() = packageRule("COPYLEFT_IN_SOURCE") {
-    require {
-        -isExcluded()
-    }
-
-    licenseRule("COPYLEFT_IN_SOURCE", LicenseView.CONCLUDED_OR_DECLARED_AND_DETECTED) {
-        require {
-            -isExcluded()
-            +isCopyleft()
-        }
-
-        val message = if (licenseSource == LicenseSource.DETECTED) {
-            "The ScanCode copyleft categorized license $license was ${licenseSource.name.lowercase()} " +
-                    "in package ${pkg.metadata.id.toCoordinates()}."
-        } else {
-            "The package ${pkg.metadata.id.toCoordinates()} has the ${licenseSource.name.lowercase()} ScanCode copyleft " +
-                    "catalogized license $license."
-        }
-
-        error(message, howToFixDefault())
-    }
-}
-
-fun RuleSet.copyleftInSourceLimitedRule() = packageRule("COPYLEFT_LIMITED_IN_SOURCE") {
-    require {
-        -isExcluded()
-    }
-
-    licenseRule("COPYLEFT_LIMITED_IN_SOURCE", LicenseView.CONCLUDED_OR_DECLARED_OR_DETECTED) {
-        require {
-            -isExcluded()
-            +isCopyleftLimited()
-        }
-
-        val licenseSourceName = licenseSource.name.lowercase()
-        val message = if (licenseSource == LicenseSource.DETECTED) {
-            if (pkg.metadata.id.type == "Unmanaged") {
-                "The ScanCode copyleft-limited categorized license $license was $licenseSourceName in package " +
-                        "${pkg.metadata.id.toCoordinates()}."
-            } else {
-                "The ScanCode copyleft-limited categorized license $license was $licenseSourceName in package " +
-                        "${pkg.metadata.id.toCoordinates()}."
-            }
-        } else {
-            "The package ${pkg.metadata.id.toCoordinates()} has the $licenseSourceName ScanCode copyleft-limited " +
-                    "categorized license $license."
-        }
-
-        error(message, howToFixDefault())
     }
 }
 
@@ -228,42 +170,6 @@ fun RuleSet.highSeverityVulnerabilityInPackageRule() = packageRule("HIGH_SEVERIT
             "$scoreThreshold.",
         howToFixDefault()
     )
-}
-
-fun RuleSet.copyleftInDependencyRule() = dependencyRule("COPYLEFT_IN_DEPENDENCY") {
-    licenseRule("COPYLEFT_IN_DEPENDENCY", LicenseView.CONCLUDED_OR_DECLARED_OR_DETECTED) {
-        require {
-            +isCopyleft()
-        }
-
-        issue(
-            Severity.ERROR,
-            "The project ${project.id.toCoordinates()} has a dependency licensed under the ScanCode " +
-                    "copyleft categorized license $license.",
-            howToFixDefault()
-        )
-    }
-}
-
-fun RuleSet.copyleftLimitedInDependencyRule() = dependencyRule("COPYLEFT_LIMITED_IN_DEPENDENCY_RULE") {
-    require {
-        +isAtTreeLevel(0)
-        +isStaticallyLinked()
-    }
-
-    licenseRule("COPYLEFT_LIMITED_IN_DEPENDENCY_RULE", LicenseView.CONCLUDED_OR_DECLARED_OR_DETECTED) {
-        require {
-            +isCopyleftLimited()
-        }
-
-        // Use issue() instead of error() if you want to set the severity.
-        issue(
-            Severity.WARNING,
-            "The project ${project.id.toCoordinates()} has a statically linked direct dependency licensed " +
-                    "under the ScanCode copyleft-left categorized license $license.",
-            howToFixDefault()
-        )
-    }
 }
 
 fun RuleSet.deprecatedScopeExcludeReasonInOrtYmlRule() = ortResultRule("DEPRECATED_SCOPE_EXCLUDE_REASON_IN_ORT_YML") {
@@ -357,10 +263,7 @@ fun RuleSet.wrongLicenseInLicenseFileRule() = projectSourceRule("WRONG_LICENSE_I
 fun RuleSet.licenseCompatibilityRule() = packageRule("LICENSE_COMPATIBILITY") {
     require { -isExcluded() }
 
-    // projectSourceGetDetectedLicensesByFilePath is only available in projectSourceRule contexts,
-    // so the root license is configured statically here.
-    val rootLicense = "GPL-3.0"
-    val allowedLicenses = LicensePresets[rootLicense] ?: defaultAllowedLicenses
+    val allowedLicenses = LicensePresets[detectedRootLicense] ?: defaultAllowedLicenses
 
     licenseRule("LICENSE_COMPATIBILITY", LicenseView.CONCLUDED_OR_DECLARED_AND_DETECTED) {
         require {
@@ -369,7 +272,7 @@ fun RuleSet.licenseCompatibilityRule() = packageRule("LICENSE_COMPATIBILITY") {
         }
 
         error(
-            "The license '$license' is incompatible with the project's root license '$rootLicense'. " +
+            "The license '$license' is incompatible with the project's root license '$detectedRootLicense'. " +
             "Allowed licenses: ${allowedLicenses.joinToString()}.",
             howToFixDefault()
         )
@@ -383,8 +286,6 @@ fun RuleSet.licenseCompatibilityRule() = packageRule("LICENSE_COMPATIBILITY") {
 val ruleSet = ruleSet(ortResult, licenseInfoResolver, resolutionProvider) {
     unhandledLicenseRule()
     unmappedDeclaredLicenseRule()
-    copyleftInSourceRule()
-    copyleftInSourceLimitedRule()
     vulnerabilityInPackageRule()
     highSeverityVulnerabilityInPackageRule()
     deprecatedScopeExcludeReasonInOrtYmlRule()

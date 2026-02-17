@@ -12,7 +12,9 @@ jobs:
   ort:
     name: OSS Review Toolkit
     runs-on: ubuntu-latest
-    container: ghcr.io/oss-review-toolkit/ort
+    container:
+      image: ghcr.io/oss-review-toolkit/ort
+      options: --user 0:0
     steps:
        - name: Checkout
          uses: actions/checkout@v4

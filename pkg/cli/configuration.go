@@ -42,6 +42,9 @@ type Configuration struct {
 	// Include patterns
 	Include []string
 
+	// JunkPaths strips directory paths from archived files, storing only the filename
+	JunkPaths bool
+
 	// CompressionMethod to use for the zip archive
 	CompressionMethod string
 
@@ -85,6 +88,7 @@ func (conf *Configuration) defineFlags() {
 	conf.addBoolFlag(&conf.Verbose, "verbose", "v", false, "Verbose mode or print diagnostic version info.")
 	conf.addBoolFlag(&conf.Directories, "directories", "D", false, "Include directories in the zip file.")
 	conf.addBoolFlag(&conf.Recursive, "recurse-paths", "r", false, "Include all files verbose")
+	conf.addBoolFlag(&conf.JunkPaths, "junk-paths", "j", false, "Store just the name of a saved file (junk the path), and do not store directory names. By default, deterministic-zip will store the full path (relative to the current directory).")
 	conf.addBoolFlag(&conf.Quiet, "quiet", "q", false, "Quiet mode; eliminate informational messages")
 	conf.addStringsFlag(&conf.Exclude, "exclude", "x", []string{}, "Exclude specific file patterns")
 	conf.addStringsFlag(&conf.Include, "include", "i", []string{}, "Include only the specified file pattern")

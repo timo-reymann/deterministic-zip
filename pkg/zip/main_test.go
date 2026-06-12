@@ -8,7 +8,9 @@ import (
 	"io"
 	"math/rand"
 	"os"
+	"path/filepath"
 	"strconv"
+	"strings"
 	"testing"
 )
 
@@ -80,6 +82,39 @@ func TestCreate(t *testing.T) {
 			zipFiles: []expectedFile{
 				{
 					name: "testdata/folder/file.txt",
+				},
+			},
+		},
+		{
+			config: cli.Configuration{
+				SourceFiles: []string{
+					"testdata/folder/file.txt",
+				},
+				JunkPaths: true,
+			},
+			sha256:      "placeholder",
+			compression: zip.Store,
+			zipFiles: []expectedFile{
+				{
+					name: "file.txt",
+				},
+			},
+		},
+		{
+			config: cli.Configuration{
+				Directories: true,
+				JunkPaths:   true,
+				SourceFiles: []string{
+					"testdata",
+					"testdata/folder",
+					"testdata/folder/file.txt",
+				},
+			},
+			sha256:      "placeholder",
+			compression: zip.Store,
+			zipFiles: []expectedFile{
+				{
+					name: "file.txt",
 				},
 			},
 		},
@@ -325,4 +360,87 @@ func createTmpFile() string {
 	_ = f.Close()
 	_ = os.Remove(f.Name())
 	return f.Name()
+}
+
+func TestCreate_DeterministicJunkPaths(t *testing.T) {
+	tmpDir := t.TempDir()
+
+	sourceNames := []string{
+		filepath.Join(tmpDir, "alpha", "doc.txt"),
+		filepath.Join(tmpDir, "beta", "nested", "notes.md"),
+		filepath.Join(tmpDir, "data.csv"),
+	}
+	expectedNames := []string{"doc.txt", "notes.md", "data.csv"}
+
+	for _, src := range sourceNames {
+		if err := os.MkdirAll(filepath.Dir(src), 0755); err != nil {
+			t.Fatal(err)
+		}
+		if err := os.WriteFile(src, []byte("content"), 0644); err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	var lastChecksum string
+	for i := 0; i < 20; i++ {
+		shuffled := make([]string, len(sourceNames))
+		copy(shuffled, sourceNames)
+		rand.Shuffle(len(shuffled), func(i, j int) {
+			shuffled[i], shuffled[j] = shuffled[j], shuffled[i]
+		})
+
+		config := cli.Configuration{
+			SourceFiles: shuffled,
+			JunkPaths:   true,
+		}
+
+		tmpFile := createTmpFile()
+		tmpZip := tmpFile + ".zip"
+		config.ZipFile = tmpZip
+
+		if err := Create(&config, zip.Store); err != nil {
+			t.Fatal(err)
+		}
+
+		sha := checksum(tmpZip)
+		if i == 0 {
+			lastChecksum = sha
+		} else if sha != lastChecksum {
+			t.Fatalf("Run #%d: checksum mismatch: expected %s, got %s", i, lastChecksum, sha)
+		}
+
+		r, err := zip.OpenReader(tmpZip)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if len(r.File) != len(expectedNames) {
+			r.Close()
+			t.Fatalf("Expected %d entries, got %d", len(expectedNames), len(r.File))
+		}
+
+		for _, zf := range r.File {
+			if strings.Contains(zf.Name, "/") {
+				r.Close()
+				t.Fatalf("Expected basename only, got: %s", zf.Name)
+			}
+		}
+
+		for _, expectedName := range expectedNames {
+			found := false
+			for _, zf := range r.File {
+				if zf.Name == expectedName {
+					found = true
+					break
+				}
+			}
+			if !found {
+				r.Close()
+				t.Fatalf("Expected file %s to be in archive", expectedName)
+			}
+		}
+
+		r.Close()
+		os.Remove(tmpZip)
+	}
 }

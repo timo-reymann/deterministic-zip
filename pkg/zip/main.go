@@ -42,7 +42,7 @@ func Create(c *cli.Configuration, compression uint16) error {
 
 	sort.Strings(c.SourceFiles)
 	for _, srcFile := range c.SourceFiles {
-		if err := appendFile(srcFile, zipWriter, compression, c.ModifiedDate(), conditions.OnFlag(c.Directories)); err != nil {
+		if err := appendFile(srcFile, zipWriter, compression, c.ModifiedDate(), conditions.OnFlag(c.Directories), c.JunkPaths); err != nil {
 			return err
 		}
 	}
@@ -56,7 +56,7 @@ func registerCompressors(zipWriter *zip.Writer) {
 	})
 }
 
-func appendFile(srcFile string, zipWriter *zip.Writer, compression uint16, modifiedTimestamp time.Time, includeDirs bool) error {
+func appendFile(srcFile string, zipWriter *zip.Writer, compression uint16, modifiedTimestamp time.Time, includeDirs bool, junkPaths bool) error {
 	output.Infof("Adding %s", srcFile)
 
 	f, err := os.Open(srcFile)
@@ -77,6 +77,10 @@ func appendFile(srcFile string, zipWriter *zip.Writer, compression uint16, modif
 		return err
 	}
 
+	if junkPaths && stat.IsDir() {
+		return nil
+	}
+
 	if !includeDirs && stat.IsDir() {
 		return nil
 	}
@@ -87,7 +91,11 @@ func appendFile(srcFile string, zipWriter *zip.Writer, compression uint16, modif
 	}
 	h.Modified = modifiedTimestamp
 	h.Method = compression
-	h.Name = srcFile
+	if junkPaths {
+		h.Name = filepath.Base(srcFile)
+	} else {
+		h.Name = srcFile
+	}
 	h.Extra = extra
 
 	// If dealing with a directory, we must ensure the h.Name field ends with a `/`

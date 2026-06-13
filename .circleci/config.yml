@@ -70,8 +70,8 @@ jobs:
             make build-docker
       - docker/update-description:
           image: timoreymann/deterministic-zip
-          docker-username: DOCKER_USERNAME
-          docker-password: DOCKER_TOKEN
+          docker_username: DOCKER_USERNAME
+          docker_password: DOCKER_TOKEN
 
   update_homebrew_formula:
     executor: python

@@ -68,7 +68,7 @@ jobs:
             echo "$DOCKER_TOKEN" | docker login -u "$DOCKER_USERNAME" --password-stdin
             docker buildx create --use
             make build-docker
-      - docker/update-description:
+      - docker/update_description:
           image: timoreymann/deterministic-zip
           docker_username: DOCKER_USERNAME
           docker_password: DOCKER_TOKEN

@@ -685,7 +685,7 @@ The applicable license information is listed below:
 
 ----
 
-Package: github.com/gobwas/glob:0.2.3
+Package: github.com/gobwas/glob:1.0.0
 
 This package contains the file LICENSE with the following contents:
 

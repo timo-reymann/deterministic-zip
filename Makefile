@@ -34,7 +34,7 @@ build-linux: create-dist ## Build binaries for linux
 build-windows: create-dist ## Build binaries for windows
 	@CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -o $(BIN_PREFIX)windows-amd64.exe $(BUILD_ARGS)
 	@CGO_ENABLED=0 GOOS=windows GOARCH=386 go build -o $(BIN_PREFIX)windows-i386.exe $(BUILD_ARGS)
-	@CGO_ENABLED=0 GOOS=windows GOARCH=arm go build -o $(BIN_PREFIX)windows-arm.exe $(BUILD_ARGS)
+	@CGO_ENABLED=0 GOOS=windows GOARCH=arm64 go build -o $(BIN_PREFIX)windows-arm64.exe $(BUILD_ARGS)
 
 build-darwin: create-dist  ## Build binaries for macOS
 	@CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build -o $(BIN_PREFIX)darwin-amd64 $(BUILD_ARGS)

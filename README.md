@@ -119,9 +119,9 @@ ready to use integration):
     - 64-bit
     - ARM (M1/M2)
 - Windows
-    - ARM
     - 32-bit
     - 64-bit
+    - ARM 64-bit
 - FreeBSD
     - 32-bit
     - 64-bit

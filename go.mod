@@ -4,5 +4,5 @@ go 1.27
 
 require (
 	github.com/gobwas/glob v0.2.3
-	github.com/spf13/pflag v1.0.10
+	github.com/spf13/pflag v1.1.0
 )
